@@ -1,0 +1,116 @@
+<div class="dashboard-container">
+    <header>
+        <h2>Trading Dashboard</h2>
+        <button class="btn-logout" (click)="onLogout()">Logout</button>
+    </header>
+
+    <div class="search-section">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search a symbol (ex: AAPL - Apple)">
+        <button class="btn-search" (click)="onSearch()">Search</button>
+    </div>
+
+    @if(errorMessage){
+    <div class="error-msg">{{errorMessage}}</div>
+    }
+    @if(stockData){
+    <div class="stock-card">
+        <div class="card-header">
+            <div class="header-top-row">
+                <div class="symbol-price-group">
+                    <h2>{{searchedSymbol | uppercase}}</h2>
+
+                    @if(stockData?.price){
+                    <div class="price-display">
+                        <span class="current-price">${{stockData.price | number: '1.2-2'}}</span>
+
+                        <span class="price-change" [ngClass]="getChangeClass()">
+                            {{ getPriceDiff() > 0 ? '+' : '' }}{{ getPriceDiff() | number:'1.2-2' }}
+                            ({{ getPriceDiff() > 0 ? '+' : '' }}{{ getDailyChangePercent() | number:'1.2-2' }}%)
+                        </span>
+                    </div>
+                    }
+                </div>
+
+                <div class="chart-controls">
+                    <div class="control-group">
+                        <label>Range:</label>
+                        <select [(ngModel)]="selectedRange" (change)="onChartSettingsChange()">
+                            <option [value]="ChartRangeEnum.OneYear">1 Year</option>
+                            <option [value]="ChartRangeEnum.OneMonth">1 Month</option>
+                            <option [value]="ChartRangeEnum.OneDay">1 Day</option>
+                            <option [value]="ChartRangeEnum.OneHour">1 Hour</option>
+                            <option [value]="ChartRangeEnum.ThirtyMinutes">30 Min</option>
+                            <option [value]="ChartRangeEnum.FifteenMinutes">15 Min</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Candle:</label>
+                        <select [(ngModel)]="selectedCandle" (change)="onChartSettingsChange()">
+                            <option [value]="ChartTimeframeEnum.OneMonth" [disabled]="getRangePrio(selectedRange) < 5">1
+                                Month</option>
+                            <option [value]="ChartTimeframeEnum.OneDay" [disabled]="getRangePrio(selectedRange) < 4">1
+                                Day</option>
+                            <option [value]="ChartTimeframeEnum.OneHour" [disabled]="getRangePrio(selectedRange) < 3">1
+                                Hour</option>
+                            <option [value]="ChartTimeframeEnum.ThirtyMinutes"
+                                [disabled]="getRangePrio(selectedRange) < 2">30 Min</option>
+                            <option [value]="ChartTimeframeEnum.FifteenMinutes"
+                                [disabled]="getRangePrio(selectedRange) < 1">15 Min</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Type:</label>
+                        <select [(ngModel)]="selectedChartType" (change)="onChartSettingsChange()">
+                            <option [value]="ChartTypeEnum.Candlestick">Candlestick</option>
+                            <option [value]="ChartTypeEnum.Line">Line</option>
+                            <option [value]="ChartTypeEnum.Area">Area</option>
+                            <option [value]="ChartTypeEnum.Baseline">Baseline</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Indicators:</label>
+                        <div class="checkbox-wrapper" style="display:flex; gap:10px;">
+                            <div>
+                                <input type="checkbox" id="smaCheck" [(ngModel)]="showSMA"
+                                    (change)="onChartSettingsChange()">
+                                <label for="smaCheck" style="cursor:pointer; color:#334155;">SMA</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="emaCheck" [(ngModel)]="showEMA"
+                                    (change)="onChartSettingsChange()">
+                                <label for="emaCheck" style="cursor:pointer; color:#334155;">EMA</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="bbCheck" [(ngModel)]="showBollinger"
+                                    (change)="onChartSettingsChange()">
+                                <label for="bbCheck" style="cursor:pointer; color:#334155;">Bollinger</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn-recenter" (click)="recenterChart()" title="Revenire la prezent">
+                            ⌂ Recenter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item"><span class="label">OPEN</span> <span class="value">{{stockData.open |
+                        number:'1.2-2'}}</span></div>
+                <div class="stat-item"><span class="label">HIGH</span> <span class="value">{{stockData.high |
+                        number:'1.2-2'}}</span></div>
+                <div class="stat-item"><span class="label">LOW</span> <span class="value">{{stockData.low |
+                        number:'1.2-2'}}</span></div>
+                <div class="stat-item"><span class="label">PREV. CLOSE</span> <span
+                        class="value">{{stockData.previousClose | number:'1.2-2'}}</span></div>
+                <div class="stat-item"><span class="label">VOLUME</span> <span class="value">{{stockData.volume |
+                        number}}</span></div>
+            </div>
+        </div>
+
+        <div #chartContainer class="chart-container"></div>
+    </div>
+    }
+</div>

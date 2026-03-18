@@ -1,0 +1,70 @@
+# ==========================================
+# ANGULAR / NODE.JS (Frontend)
+# ==========================================
+# Pachete descarcate (se regenereaza cu npm install)
+node_modules/
+
+# Fisiere de build (compilate)
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Cache Angular si log-uri de eroare
+.angular/
+npm-debug.log
+yarn-error.log
+*npm-debug.log*
+
+# Rapoarte de testare
+coverage/
+
+# ==========================================
+# .NET / C# (Backend)
+# ==========================================
+# Fisiere compilate si binare (se regenereaza la Build)
+[Bb]in/
+[Oo]bj/
+
+# Fisiere si foldere specifice Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Fisiere de setari locale (Daca ai parole/chei de API in ele, decomenteaza linia de mai jos)
+# appsettings.Development.json
+# secrets.json
+
+# Baze de date locale (daca folosesti SQLite de exemplu in teste)
+*.db
+*.sqlite3
+
+# ==========================================
+# SISTEME DE OPERARE & EDITOARE (General)
+# ==========================================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VS Code (Setari specifice editorului tau, nu ale proiectului)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+Backend/TradingAPI/TradingAPI/Migrations/20260301143939_InitialCreate.cs
+Backend/TradingAPI/TradingAPI.slnx
+Backend/TradingAPI/TradingAPI/appsettings.Development.json
+Backend/TradingAPI/TradingAPI/appsettings.json
+Backend/TradingAPI/TradingAPI/Migrations/20260301143939_InitialCreate.Designer.cs
+Backend/TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
+Backend/TradingAPI/TradingAPI/Properties/launchSettings.json
+Backend/TradingAPI/TradingAPI/TradingAPI.csproj
+Backend/TradingAPI/TradingAPI/TradingAPI.http
+Frontend/trading-frontend/.editorconfig
+Frontend/trading-frontend/.vscode/extensions.json

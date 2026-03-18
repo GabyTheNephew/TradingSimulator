@@ -1,0 +1,109 @@
+.register-container {
+  max-width: clamp(20rem, 90vw, 25rem);
+  
+  margin: 10vh auto; 
+  padding: 1.5rem;
+  
+  border: 0.05rem solid #e0e0e0; 
+  border-radius: 0.75rem;
+  
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+  }
+
+  .alert-message {
+    padding: 0.75rem;
+    margin-bottom: 1.25rem;
+    border-radius: 0.4rem;
+    border-width: 0.05rem;
+    border-style: solid;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+
+    &.success {
+      background-color: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+
+    &.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-color: #f5c6cb;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #34495e;
+      font-size: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 0.05rem solid #ccd1d9;
+      border-radius: 0.4rem;
+      box-sizing: border-box; 
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 0.15rem rgba(52, 152, 219, 0.2); 
+      }
+    }
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 0.4rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+
+    &:hover {
+      background-color: #2980b9;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+  .auth-link {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    color: #34495e;
+
+    a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+
+      &:hover {
+        text-decoration: underline;
+        color: #2980b9;
+      }
+    }
+  }
+}
