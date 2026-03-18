@@ -58,13 +58,7 @@ Thumbs.db
 !.vscode/launch.json
 !.vscode/extensions.json
 Backend/TradingAPI/TradingAPI/Migrations/20260301143939_InitialCreate.cs
-Backend/TradingAPI/TradingAPI.slnx
 Backend/TradingAPI/TradingAPI/appsettings.Development.json
 Backend/TradingAPI/TradingAPI/appsettings.json
 Backend/TradingAPI/TradingAPI/Migrations/20260301143939_InitialCreate.Designer.cs
 Backend/TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
-Backend/TradingAPI/TradingAPI/Properties/launchSettings.json
-Backend/TradingAPI/TradingAPI/TradingAPI.csproj
-Backend/TradingAPI/TradingAPI/TradingAPI.http
-Frontend/trading-frontend/.editorconfig
-Frontend/trading-frontend/.vscode/extensions.json
