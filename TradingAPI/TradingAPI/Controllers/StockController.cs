@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using TradingAPI.Models.Enums;
 using TradingAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TradingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StockController : ControllerBase
     {
         private readonly AlpacaService _alpacaService;

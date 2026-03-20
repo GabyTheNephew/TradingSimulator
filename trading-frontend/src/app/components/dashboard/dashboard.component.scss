@@ -207,4 +207,147 @@
       transform: scale(0.97);
     }
   }
+  .trading-panel {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #cbd5e1;
+
+      h3 {
+        margin: 0;
+        color: #1e293b;
+        font-size: 1.25rem;
+      }
+
+      .balance-info {
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+
+        .label {
+          color: #64748b;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .value {
+          color: #0f172a;
+          font-size: 1.2rem;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .trading-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      .input-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        label {
+          font-weight: 600;
+          color: #334155;
+        }
+
+        input {
+          width: 100px;
+          padding: 0.5rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 0.25rem;
+          font-size: 1.1rem;
+          text-align: center;
+          outline: none;
+
+          &:focus {
+            border-color: #3b82f6;
+          }
+        }
+      }
+
+      .order-summary {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        .label {
+          font-size: 0.8rem;
+          color: #64748b;
+          font-weight: 600;
+        }
+
+        .value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1e293b;
+        }
+      }
+    }
+
+    .trading-buttons {
+      display: flex;
+      gap: 1rem;
+
+      button {
+        flex: 1;
+        padding: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: transform 0.1s, opacity 0.2s;
+
+        &:active {
+          transform: scale(0.98);
+        }
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+
+      .btn-buy {
+        background-color: #26a69a; // Verdele din graficul tău
+      }
+
+      .btn-sell {
+        background-color: #ef5350; // Roșul din graficul tău
+      }
+    }
+
+    .trade-alert {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      text-align: center;
+
+      &.success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+      }
+
+      &.error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+      }
+    }
+  }
 }

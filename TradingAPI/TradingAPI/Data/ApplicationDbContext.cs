@@ -8,5 +8,6 @@ namespace TradingAPI.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
+        public DbSet<PortfolioItem> PortfolioItems { get; set; }
     }
 }

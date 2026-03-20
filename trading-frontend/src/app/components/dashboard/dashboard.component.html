@@ -111,6 +111,40 @@
         </div>
 
         <div #chartContainer class="chart-container"></div>
+
+        <div class="trading-panel">
+            <div class="panel-header">
+                <h3>Trade {{searchedSymbol | uppercase}}</h3>
+                <div class="balance-info">
+                    <span class="label">Current balance:</span>
+                    <span class="value">${{ userBalance | number:'1.2-2' }}</span>
+                </div>
+            </div>
+
+            <div class="trading-controls">
+                <div class="input-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" [(ngModel)]="tradeQuantity" min="1" step="1">
+                </div>
+
+                <div class="order-summary">
+                    <span class="label">Total:</span>
+                    <span class="value">${{ (tradeQuantity * stockData.price) | number:'1.2-2' }}</span>
+                </div>
+            </div>
+
+            <div class="trading-buttons">
+                <button class="btn-buy" (click)="buy()">BUY</button>
+                <button class="btn-sell" (click)="sell()">SELL</button>
+            </div>
+
+            @if(tradeMessage) {
+            <div class="trade-alert" [class.success]="isTradeSuccess" [class.error]="!isTradeSuccess">
+                {{ tradeMessage }}
+            </div>
+            }
+        </div>
     </div>
+
     }
 </div>

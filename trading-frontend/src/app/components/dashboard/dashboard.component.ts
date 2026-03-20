@@ -8,11 +8,14 @@ import { createChart, IChartApi, ISeriesApi, CandlestickSeries, LineSeries, Area
 import { ChartRange, getRangePriority } from '../../models/enums/chart-range.enum';
 import { ChartTimeframe, getCandlePriority } from '../../models/enums/chart-timeframe.enum';
 import { ChartType } from '../../models/enums/chart-type.enum';
+import { TradingService } from '../../services/trading.service';
+import { TradeRequest } from '../../models/trade.model';
+import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -55,7 +58,20 @@ export class DashboardComponent {
   private lastFetchedSymbol: string = '';
   private lastFetchedCandle: ChartTimeframe | null = null;
 
-  constructor(private stockService: StockService, private router: Router, private cdr: ChangeDetectorRef) { }
+  public tradeQuantity: number = 1;
+  public tradeMessage: string = '';
+  public isTradeSuccess: boolean = true;
+  public userBalance: number = 0;
+  public userPortfolio: PortfolioItem[] = [];
+
+  constructor(private stockService: StockService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private tradingService: TradingService) { }
+
+  ngOnInit() {
+    this.loadUserProfile();
+  }
 
   public onSearch(): void {
     if (!this.searchQuery) return;
@@ -104,83 +120,6 @@ export class DashboardComponent {
       }
     }
   }
-
-  // private loadChartHistory(symbol: string, range: ChartRange, candle: ChartTimeframe): void {
-  //   this.stockService.getStockHistory(symbol, range, candle).subscribe({
-  //     next: (historicalData) => {
-  //       if (this.chart) {
-  //         this.chart.remove();
-  //       }
-
-  //       this.chart = createChart(this.chartContainer.nativeElement, {
-  //         layout: { background: { color: '#ffffff' }, textColor: '#333' },
-  //         grid: { vertLines: { color: '#f0f3fa' }, horzLines: { color: '#f0f3fa' } },
-  //         width: this.chartContainer.nativeElement.clientWidth,
-  //         height: 400,
-  //         crosshair: {
-  //           mode: CrosshairMode.Normal,
-  //         }
-  //       });
-
-  //       this.candlestickSeries = this.chart.addSeries(CandlestickSeries, {
-  //         upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-  //         wickUpColor: '#26a69a', wickDownColor: '#ef5350'
-  //       });
-
-  //       // this.chart.priceScale('').applyOptions({
-  //       //   scaleMargins: {
-  //       //     top: 0.85,
-  //       //     bottom: 0
-  //       //   }
-  //       // });
-
-  //       this.chart.priceScale('right').applyOptions({
-  //         scaleMargins: {
-  //           top: 0.1,
-  //           bottom: 0.25
-  //         }
-  //       });
-
-  //       const volumeSeries = this.chart.addSeries(HistogramSeries, {
-  //         priceFormat: { type: 'volume' },
-  //         priceScaleId: '',
-  //         lastValueVisible: false,
-  //         priceLineVisible: false
-  //       });
-  //       volumeSeries.priceScale().applyOptions({
-  //         scaleMargins: {
-  //           top: 0.85,
-  //           bottom: 0
-  //         }
-  //       });
-  //       const formattedData = historicalData.map(d => {
-  //         const isDailyOrMonthly = candle === ChartTimeframe.OneDay || candle === ChartTimeframe.OneMonth;
-  //         const timeValue = isDailyOrMonthly ? d.time.split('T')[0] : new Date(d.time).getTime() / 1000;
-
-  //         return {
-  //           time: timeValue as any,
-  //           open: d.open,
-  //           high: d.high,
-  //           low: d.low,
-  //           close: d.close,
-  //           volume: d.volume
-  //         };
-  //       });
-
-  //       this.candlestickSeries.setData(formattedData);
-
-  //       const volumeData = formattedData.map(d => ({
-  //         time: d.time,
-  //         value: d.volume,
-  //         color: d.close >= d.open ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)'
-  //       }));
-
-  //       volumeSeries.setData(volumeData);
-  //       this.chart.timeScale().fitContent();
-  //     },
-  //     error: (err) => console.error(err)
-  //   });
-  // }
 
   private loadChartHistory(symbol: string, candle: ChartTimeframe): void {
     this.stockService.getStockHistory(symbol, candle).subscribe({
@@ -321,79 +260,6 @@ export class DashboardComponent {
     }
   }
 
-  // private renderChart(historicalData: any[], candle: ChartTimeframe): void {
-  //   // Curățăm graficul vechi
-  //   if (this.chart) {
-  //     this.chart.remove();
-  //   }
-
-  //   this.chart = createChart(this.chartContainer.nativeElement, {
-  //     layout: { background: { color: '#ffffff' }, textColor: '#333' },
-  //     grid: { vertLines: { color: '#f0f3fa' }, horzLines: { color: '#f0f3fa' } },
-  //     width: this.chartContainer.nativeElement.clientWidth,
-  //     height: 400,
-  //     crosshair: {
-  //       mode: CrosshairMode.Normal,
-  //     }
-  //   });
-
-  //   this.candlestickSeries = this.chart.addSeries(CandlestickSeries, {
-  //     upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-  //     wickUpColor: '#26a69a', wickDownColor: '#ef5350'
-  //   });
-
-  //   // this.chart.priceScale('').applyOptions({
-  //   //   scaleMargins: {
-  //   //     top: 0.85,
-  //   //     bottom: 0
-  //   //   }
-  //   // });
-
-  //   this.chart.priceScale('right').applyOptions({
-  //     scaleMargins: {
-  //       top: 0.1,
-  //       bottom: 0.25
-  //     }
-  //   });
-
-  //   const volumeSeries = this.chart.addSeries(HistogramSeries, {
-  //     priceFormat: { type: 'volume' },
-  //     priceScaleId: '',
-  //     lastValueVisible: false,
-  //     priceLineVisible: false
-  //   });
-  //   volumeSeries.priceScale().applyOptions({
-  //     scaleMargins: {
-  //       top: 0.85,
-  //       bottom: 0
-  //     }
-  //   });
-  //   const formattedData = historicalData.map(d => {
-  //     const isDailyOrMonthly = candle === ChartTimeframe.OneDay || candle === ChartTimeframe.OneMonth;
-  //     const timeValue = isDailyOrMonthly ? d.time.split('T')[0] : new Date(d.time).getTime() / 1000;
-
-  //     return {
-  //       time: timeValue as any,
-  //       open: d.open,
-  //       high: d.high,
-  //       low: d.low,
-  //       close: d.close,
-  //       volume: d.volume
-  //     };
-  //   });
-
-  //   this.candlestickSeries.setData(formattedData);
-
-  //   const volumeData = formattedData.map(d => ({
-  //     time: d.time,
-  //     value: d.volume,
-  //     color: d.close >= d.open ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)'
-  //   }));
-
-  //   volumeSeries.setData(volumeData);
-  //   this.chart.timeScale().fitContent();
-  // }
-
   private renderChart(historicalData: any[], candle: ChartTimeframe): void {
     if (this.chart) {
       this.chart.remove();
@@ -500,13 +366,13 @@ export class DashboardComponent {
     // --- INDICATORUL BOLLINGER BANDS ---
     if (this.showBollinger) {
       const bbColor = 'rgba(156, 39, 176, 0.6)'; // Mov
-      
+
       this.bbUpperSeries = this.chart.addSeries(LineSeries, { color: bbColor, lineWidth: 1, title: 'Upper' });
       this.bbBasisSeries = this.chart.addSeries(LineSeries, { color: bbColor, lineWidth: 1, title: 'BB Basis', lineStyle: 2 }); // Linie punctată
       this.bbLowerSeries = this.chart.addSeries(LineSeries, { color: bbColor, lineWidth: 1, title: 'Lower' });
 
       const bbData = this.calculateBollingerBands(historicalData, 20, 2, candle);
-      
+
       this.bbUpperSeries.setData(bbData.upper);
       this.bbBasisSeries.setData(bbData.basis);
       this.bbLowerSeries.setData(bbData.lower);
@@ -534,6 +400,76 @@ export class DashboardComponent {
 
   public recenterChart(): void {
     this.applyZoom();
+  }
+
+  public buy(): void {
+    if (!this.searchedSymbol) {
+      this.tradeMessage = "Please search a symbol!";
+      return;
+    }
+
+    const request: TradeRequest = {
+      symbol: this.searchedSymbol,
+      quantity: this.tradeQuantity
+    };
+
+    this.tradingService.buyStock(request).subscribe({
+      next: (res) => {
+        this.tradeMessage = `Transaction succesful! ${this.tradeQuantity} x ${this.searchedSymbol}`;
+        this.isTradeSuccess = true;
+        // Dacă backend-ul ne-a trimis noua balanță, o actualizăm pe ecran
+        if (res.newBalance !== undefined) {
+          this.userBalance = res.newBalance;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        // Afișăm eroarea venită de la server (ex: "Fonduri insuficiente")
+        this.tradeMessage = `Error: ${err.error.message || 'Transaction error'}`;
+        this.isTradeSuccess = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  public sell(): void {
+    if (!this.searchedSymbol) {
+      this.tradeMessage = "Please search a symbol!";
+      return;
+    }
+
+    const request: TradeRequest = {
+      symbol: this.searchedSymbol,
+      quantity: this.tradeQuantity
+    };
+
+    this.tradingService.sellStock(request).subscribe({
+      next: (res) => {
+        this.tradeMessage = `Transaction succesful! You sold ${this.tradeQuantity} x ${this.searchedSymbol}`;
+        this.isTradeSuccess = true;
+        if (res.newBalance !== undefined) {
+          this.userBalance = res.newBalance;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        // Afișăm eroarea venită de la server (ex: "Nu deții suficiente acțiuni")
+        this.tradeMessage = `Error: ${err.error.message || 'Transaction error'}`;
+        this.isTradeSuccess = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private loadUserProfile(): void {
+    this.tradingService.getPortfolio().subscribe({
+      next: (data: PortfolioResponse) => { // Acum TypeScript știe exact ce conține 'data'
+        this.userBalance = data.balance;
+        this.userPortfolio = data.items;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Eroare la preluarea portofoliului', err)
+    });
   }
 
   public onLogout(): void {
