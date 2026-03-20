@@ -8,5 +8,11 @@ export interface TradeResponse {
   message: string;
   newBalance?: number;
   remainingQuantity?: number;
-  portfolioItem?: any;
+  portfolioItem?: PortfolioItem;
+}
+
+export interface PortfolioItem{
+  symbol: string;
+  quantity: number;
+  averagePrice: number;
 }
