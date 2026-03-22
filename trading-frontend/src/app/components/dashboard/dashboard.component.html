@@ -19,7 +19,7 @@
                 <div class="symbol-price-group">
                     <h2>{{searchedSymbol | uppercase}}</h2>
 
-                    @if(stockData?.price){
+                    @if(stockData.price){
                     <div class="price-display">
                         <span class="current-price">${{stockData.price | number: '1.2-2'}}</span>
 
@@ -111,38 +111,109 @@
         </div>
 
         <div #chartContainer class="chart-container"></div>
+        <div class="bottom-panels">
+            <div class="trading-panel">
+                <div class="panel-header advanced-header">
+                    <div class="header-top-row">
+                        <h3>
+                            Trade {{searchedSymbol | uppercase}}
+                            <span class="current-price-inline">${{ stockData.price | number:'1.2-2' }}</span>
+                        </h3>
+                        <div class="balance-info">
+                            <span class="label">Balance:</span>
+                            <span class="value">${{ userBalance | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
 
-        <div class="trading-panel">
-            <div class="panel-header">
-                <h3>Trade {{searchedSymbol | uppercase}}</h3>
-                <div class="balance-info">
-                    <span class="label">Current balance:</span>
-                    <span class="value">${{ userBalance | number:'1.2-2' }}</span>
+                    <div class="header-change-row">
+                        <span class="change-percent" 
+                              [class.profit]="stockData.changePercent >= 0" 
+                              [class.loss]="stockData.changePercent < 0">
+                            {{ stockData.changePercent >= 0 ? '+' : '' }}{{ stockData.changePercent | number:'1.2-2' }}%
+                        </span>
+                    </div>
+
+                    <div class="header-quotes-row">
+                        <div class="quote-box bid">
+                            <span class="q-label">BID:</span>
+                            <span class="q-value">${{ stockData.bid | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="quote-box ask">
+                            <span class="q-label">ASK:</span>
+                            <span class="q-value">${{ stockData.ask | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trading-controls">
+                    <div class="input-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" [(ngModel)]="tradeQuantity" min="1" step="1">
+                    </div>
+
+                    <div class="order-summary">
+                        <span class="label">Estimated Total:</span>
+                        <span class="value">${{ (tradeQuantity * stockData.ask) | number:'1.2-2' }}</span>
+                    </div>
+                </div>
+
+                <div class="trading-buttons">
+                    <button class="btn-buy" (click)="buy()">BUY</button>
+                    <button class="btn-sell" (click)="sell()">SELL</button>
+                </div>
+
+                @if(tradeMessage) {
+                <div class="trade-alert" [class.success]="isTradeSuccess" [class.error]="!isTradeSuccess">
+                    {{ tradeMessage }}
+                </div>
+                }
+            </div>
+
+            <div class="position-panel">
+                <div class="panel-header">
+                    <h3>Order history: {{searchedSymbol | uppercase}}</h3>
+                </div>
+
+                <div class="table-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Side</th>
+                                <th>Qty</th>
+                                <th>Filled Qty</th>
+                                <th>Fill Price</th>
+                                <th>Status</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (order of symbolOrders; track order.id) {
+                            <tr>
+                                <td>
+                                    <span class="side-badge" [class.buy]="order.side === 'Buy'"
+                                        [class.sell]="order.side === 'Sell'">
+                                        {{ order.side | uppercase }}
+                                    </span>
+                                </td>
+                                <td>{{ order.quantity }}</td>
+                                <td>{{ order.filledQuantity }}</td>
+                                <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
+                                <td>
+                                    <span class="status-text" [class.filled]="order.status === 'Filled'">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="6" class="no-data">There aren't orders for this stock.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <div class="trading-controls">
-                <div class="input-group">
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" [(ngModel)]="tradeQuantity" min="1" step="1">
-                </div>
-
-                <div class="order-summary">
-                    <span class="label">Total:</span>
-                    <span class="value">${{ (tradeQuantity * stockData.price) | number:'1.2-2' }}</span>
-                </div>
-            </div>
-
-            <div class="trading-buttons">
-                <button class="btn-buy" (click)="buy()">BUY</button>
-                <button class="btn-sell" (click)="sell()">SELL</button>
-            </div>
-
-            @if(tradeMessage) {
-            <div class="trade-alert" [class.success]="isTradeSuccess" [class.error]="!isTradeSuccess">
-                {{ tradeMessage }}
-            </div>
-            }
         </div>
     </div>
 

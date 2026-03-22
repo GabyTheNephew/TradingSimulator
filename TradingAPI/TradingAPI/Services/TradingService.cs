@@ -3,6 +3,8 @@ using TradingAPI.Data;
 using TradingAPI.Models.DTOs;
 using TradingAPI.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using TradingAPI.Models.Enums;
+using TradingAPI.Models.Entities;
 
 namespace TradingAPI.Services
 {
@@ -62,6 +64,20 @@ namespace TradingAPI.Services
                 portfolioItem.AveragePrice = totalValue / portfolioItem.Quantity;
             }
 
+            var order = new Order
+            {
+                UserId = userId,
+                Symbol = request.Symbol,
+                Side = OrderSide.Buy,
+                Quantity = request.Quantity,
+                FilledQuantity = request.Quantity, // Deocamdată primești tot ce ai cerut instant
+                AverageFillPrice = currentPrice,
+                Status = OrderStatus.Filled,       // Statusul e direct Filled
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.Orders.Add(order);
+
             await _context.SaveChangesAsync();
 
             return new TradeResponseDto
@@ -99,6 +115,20 @@ namespace TradingAPI.Services
                 _context.PortfolioItems.Remove(portfolioItem);
             }
 
+            var order = new Order
+            {
+                UserId = userId,
+                Symbol = request.Symbol,
+                Side = OrderSide.Sell,
+                Quantity = request.Quantity,
+                FilledQuantity = request.Quantity,
+                AverageFillPrice = currentPrice,
+                Status = OrderStatus.Filled,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.Orders.Add(order);
+
             await _context.SaveChangesAsync();
 
             return new TradeResponseDto
@@ -130,6 +160,47 @@ namespace TradingAPI.Services
                 Balance = user.Balance,
                 Items = portfolioItems
             };
+        }
+        public async Task<List<OrderResponseDto>> GetAllOrdersAsync(string userId)
+        {
+            // Extragem din baza de date
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            // Mapăm în DTO (transformăm Enum-urile în String)
+            return orders.Select(o => new OrderResponseDto
+            {
+                Id = o.Id,
+                Symbol = o.Symbol,
+                Side = o.Side.ToString(),
+                Quantity = o.Quantity,
+                FilledQuantity = o.FilledQuantity,
+                AverageFillPrice = o.AverageFillPrice,
+                Status = o.Status.ToString(),
+                CreatedAt = o.CreatedAt
+            }).ToList();
+        }
+
+        public async Task<List<OrderResponseDto>> GetOrdersBySymbolAsync(string userId, string symbol)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId && o.Symbol.ToUpper() == symbol.ToUpper())
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return orders.Select(o => new OrderResponseDto
+            {
+                Id = o.Id,
+                Symbol = o.Symbol,
+                Side = o.Side.ToString(),
+                Quantity = o.Quantity,
+                FilledQuantity = o.FilledQuantity,
+                AverageFillPrice = o.AverageFillPrice,
+                Status = o.Status.ToString(),
+                CreatedAt = o.CreatedAt
+            }).ToList();
         }
     }
 }

@@ -9,7 +9,7 @@ import { ChartRange, getRangePriority } from '../../models/enums/chart-range.enu
 import { ChartTimeframe, getCandlePriority } from '../../models/enums/chart-timeframe.enum';
 import { ChartType } from '../../models/enums/chart-type.enum';
 import { TradingService } from '../../services/trading.service';
-import { TradeRequest } from '../../models/trade.model';
+import { OrderResponse, StockQuote, TradeRequest } from '../../models/trade.model';
 import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
 
 @Component({
@@ -21,7 +21,7 @@ import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
 })
 export class DashboardComponent {
   public searchQuery: string = '';
-  public stockData: any = null;
+  public stockData: StockQuote | null = null;
   public errorMessage: string = '';
   public searchedSymbol: string = '';
 
@@ -64,6 +64,8 @@ export class DashboardComponent {
   public userBalance: number = 0;
   public userPortfolio: PortfolioItem[] = [];
 
+  public symbolOrders: OrderResponse[] = [];
+
   constructor(private stockService: StockService,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -71,6 +73,35 @@ export class DashboardComponent {
 
   ngOnInit() {
     this.loadUserProfile();
+  }
+
+  // Returnează doar elementul din portofoliu care corespunde cu acțiunea căutată curent
+  public get currentPosition(): PortfolioItem | undefined {
+    if (!this.userPortfolio || !this.searchedSymbol) return undefined;
+    return this.userPortfolio.find(p => p.symbol.toUpperCase() === this.searchedSymbol.toUpperCase());
+  }
+
+  // Calculează valoarea curentă a acțiunilor deținute (Cantitate * Preț Curent)
+  public get currentPositionValue(): number {
+    const pos = this.currentPosition;
+    if (!pos || !this.stockData?.price) return 0;
+    return pos.quantity * this.stockData.price;
+  }
+
+  // Calculează Profitul sau Pierderea în dolari
+  public get currentPositionPnL(): number {
+    const pos = this.currentPosition;
+    if (!pos || !this.stockData?.price) return 0;
+    const totalCost = pos.quantity * pos.averagePrice;
+    const currentValue = pos.quantity * this.stockData.price;
+    return currentValue - totalCost;
+  }
+
+  // Calculează procentajul de Profit/Pierdere
+  public get currentPositionPnLPercent(): number {
+    const pos = this.currentPosition;
+    if (!pos || !this.stockData?.price || pos.averagePrice === 0) return 0;
+    return ((this.stockData.price - pos.averagePrice) / pos.averagePrice) * 100;
   }
 
   public onSearch(): void {
@@ -83,11 +114,13 @@ export class DashboardComponent {
     this.stockService.searchStock(this.searchQuery).subscribe({
       next: (data) => {
         this.stockData = data;
-
+        console.log("StockData: ", this.stockData);
+        console.log(data);
         this.searchedSymbol = this.searchQuery;
-
+        this.loadSymbolOrders(this.searchedSymbol);
         this.loadChartHistory(this.searchedSymbol, this.selectedCandle);
         this.cdr.detectChanges();
+        // console.log("Symbol orders: ", this.symbolOrders);
       },
       error: (err) => {
         this.errorMessage = "Error when searching stock or inexistent stock";
@@ -129,7 +162,7 @@ export class DashboardComponent {
         this.lastFetchedSymbol = symbol;
         this.lastFetchedCandle = candle;
 
-        this.updateHeaderStats(historicalData);
+        // this.updateHeaderStats(historicalData);
         this.renderChart(historicalData, candle);
         this.cdr.detectChanges();
       },
@@ -244,21 +277,22 @@ export class DashboardComponent {
 
     return { upper: upperData, lower: lowerData, basis: basisData };
   }
-  private updateHeaderStats(historicalData: any[]): void {
-    if (!historicalData || historicalData.length === 0 || !this.stockData) return;
+  // private updateHeaderStats(historicalData: any[]): void {
+  //   if (!historicalData || historicalData.length === 0 || !this.stockData) return;
 
-    const lastBar = historicalData[historicalData.length - 1];
+  //   const lastBar = historicalData[historicalData.length - 1];
 
-    // Totul cu litere mici!
-    this.stockData.open = lastBar.open;
-    this.stockData.high = lastBar.high;
-    this.stockData.low = lastBar.low;
-    this.stockData.volume = lastBar.volume;
+  //   // Totul cu litere mici!
+  //   this.stockData.open = lastBar.open;
+  //   this.stockData.high = lastBar.high;
+  //   this.stockData.low = lastBar.low;
+  //   this.stockData.volume = lastBar.volume;
 
-    if (historicalData.length > 1) {
-      this.stockData.previousClose = historicalData[historicalData.length - 2].close;
-    }
-  }
+  //   if (historicalData.length > 1) {
+  //     this.stockData.previousClose = historicalData[historicalData.length - 2].close;
+  //   }
+  //   console.log(this.stockData);
+  // }
 
   private renderChart(historicalData: any[], candle: ChartTimeframe): void {
     if (this.chart) {
@@ -421,6 +455,8 @@ export class DashboardComponent {
         if (res.newBalance !== undefined) {
           this.userBalance = res.newBalance;
         }
+        this.loadUserProfile();
+        this.loadSymbolOrders(this.searchedSymbol);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -450,6 +486,8 @@ export class DashboardComponent {
         if (res.newBalance !== undefined) {
           this.userBalance = res.newBalance;
         }
+        this.loadUserProfile();
+        this.loadSymbolOrders(this.searchedSymbol);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -469,6 +507,17 @@ export class DashboardComponent {
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Eroare la preluarea portofoliului', err)
+    });
+  }
+
+  private loadSymbolOrders(symbol: string): void {
+    this.tradingService.getOrdersBySymbol(symbol).subscribe({
+      next: (orders) => {
+        this.symbolOrders = orders;
+        // console.log("Symbol orders: ", this.symbolOrders);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erorr fetching orders:', err)
     });
   }
 

@@ -66,3 +66,6 @@ TradingAPI/TradingAPI/Migrations/20260318124806_AddPortfolioTable.cs
 TradingAPI/TradingAPI/Migrations/20260318124806_AddPortfolioTable.Designer.cs
 TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
 TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
+TradingAPI/TradingAPI/Migrations/20260320092539_AddOrdersTable.cs
+TradingAPI/TradingAPI/Migrations/20260320092539_AddOrdersTable.Designer.cs
+TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs

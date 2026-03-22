@@ -112,5 +112,46 @@ namespace TradingAPI.Services
                 return null;
             }
         }
+        public async Task<StockQuoteDto?> GetStockSnapshotAsync(string symbol)
+        {
+            try
+            {
+                // AM CORECTAT AICI: Folosim LatestMarketDataRequest, nu SnapshotDataRequest
+                var snapshot = await _dataClient.GetSnapshotAsync(new LatestMarketDataRequest(symbol));
+
+                if (snapshot == null) return null;
+
+                var tradePrice = snapshot.Trade?.Price ?? 0m;
+                var askPrice = snapshot.Quote?.AskPrice ?? 0m;
+                var bidPrice = snapshot.Quote?.BidPrice ?? 0m;
+                var prevClose = snapshot.PreviousDailyBar?.Close ?? 1m;
+
+                var currentPrice = snapshot.Quote?.AskPrice ?? snapshot.Trade?.Price ?? 0m;
+                //var prevClose = snapshot.PreviousDailyBar?.Close ?? 1m; // Evităm împărțirea la 0
+
+                // Calculăm procentajul de schimbare față de ziua precedentă
+                var changePercent = ((tradePrice - prevClose) / prevClose) * 100m;
+
+                return new StockQuoteDto
+                {
+                    Symbol = snapshot.Symbol.ToUpper(),
+                    Price = tradePrice,
+                    Bid = bidPrice,
+                    Ask = askPrice,
+                    ChangePercent = Math.Round(changePercent, 2),
+
+                    Open = snapshot.CurrentDailyBar?.Open ?? 0m,
+                    High = snapshot.CurrentDailyBar?.High ?? 0m,
+                    Low = snapshot.CurrentDailyBar?.Low ?? 0m,
+                    Volume = snapshot.CurrentDailyBar?.Volume ?? 0m,
+                    PreviousClose = prevClose
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Eroare Alpaca la preluarea datelor: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

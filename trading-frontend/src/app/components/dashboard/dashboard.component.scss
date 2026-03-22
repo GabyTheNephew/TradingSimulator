@@ -207,146 +207,135 @@
       transform: scale(0.97);
     }
   }
-  .trading-panel {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
 
-    .panel-header {
+  .bottom-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Două coloane egale (50/50)
+    gap: 2rem;
+    margin-top: 1rem;
+
+    .trading-panel, .position-panel {
+      padding: 1.5rem;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      min-height: 28rem; // Înălțimea panourilor
+      
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #cbd5e1;
-
-      h3 {
-        margin: 0;
-        color: #1e293b;
-        font-size: 1.25rem;
-      }
-
-      .balance-info {
-        display: flex;
-        gap: 0.5rem;
-        align-items: baseline;
-
-        .label {
-          color: #64748b;
-          font-size: 0.9rem;
-          font-weight: 600;
-        }
-
-        .value {
-          color: #0f172a;
-          font-size: 1.2rem;
-          font-weight: 700;
-        }
-      }
     }
 
-    .trading-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-
-      .input-group {
+    // --- STILURI SPECIFICE: TRADING PANEL ---
+    .trading-panel {
+      .panel-header.advanced-header {
         display: flex;
-        align-items: center;
-        gap: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #cbd5e1;
+        justify-content: flex-start; 
+        align-items: stretch;
 
-        label {
-          font-weight: 600;
-          color: #334155;
+        .header-top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          h3 {
+            margin: 0; color: #1e293b; font-size: 1.2rem; display: flex; align-items: center; gap: 0.75rem;
+            .current-price-inline { font-weight: 700; color: #0f172a; font-size: 1.25rem; }
+          }
+          .balance-info {
+            display: flex; gap: 0.4rem; align-items: baseline;
+            .label { color: #64748b; font-size: 0.85rem; font-weight: 600; }
+            .value { color: #0f172a; font-size: 1.1rem; font-weight: 700; }
+          }
         }
 
-        input {
-          width: 100px;
-          padding: 0.5rem;
-          border: 1px solid #cbd5e1;
-          border-radius: 0.25rem;
-          font-size: 1.1rem;
-          text-align: center;
-          outline: none;
+        .header-change-row {
+          margin-top: -0.2rem;
+          .change-percent {
+            font-size: 0.85rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px;
+            &.profit { color: #26a69a; background-color: #e6f6f4; }
+            &.loss { color: #ef5350; background-color: #fdeadf; }
+          }
+        }
 
-          &:focus {
-            border-color: #3b82f6;
+        .header-quotes-row {
+          display: flex; justify-content: space-between; margin-top: 0.5rem;
+          background-color: #f1f5f9; padding: 0.5rem 0.75rem; border-radius: 4px;
+
+          .quote-box {
+            display: flex; gap: 0.5rem; align-items: center;
+            .q-label { font-size: 0.8rem; font-weight: 600; color: #64748b; }
+            .q-value { font-size: 1.1rem; font-weight: 700; color: #0f172a; }
+            &.bid .q-value { color: #ef5350; }
+            &.ask .q-value { color: #26a69a; }
           }
         }
       }
 
-      .order-summary {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-
-        .label {
-          font-size: 0.8rem;
-          color: #64748b;
-          font-weight: 600;
+      .trading-controls {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+        .input-group {
+          display: flex; align-items: center; gap: 1rem;
+          label { font-weight: 600; color: #334155; }
+          input { width: 100px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.25rem; font-size: 1.1rem; text-align: center; outline: none; }
+          input:focus { border-color: #3b82f6; }
         }
-
-        .value {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #1e293b;
+        .order-summary {
+          display: flex; flex-direction: column; align-items: flex-end;
+          .label { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+          .value { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
         }
+      }
+
+      .trading-buttons {
+        display: flex; gap: 1rem;
+        button { flex: 1; padding: 0.75rem; font-size: 1.1rem; font-weight: 700; color: white; border: none; border-radius: 0.25rem; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
+        .btn-buy { background-color: #26a69a; }
+        .btn-sell { background-color: #ef5350; }
+      }
+
+      .trade-alert {
+        margin-top: 1.5rem; padding: 1rem; border-radius: 0.25rem; font-weight: 600; text-align: center;
+        &.success { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+        &.error { background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
       }
     }
 
-    .trading-buttons {
-      display: flex;
-      gap: 1rem;
+    // --- STILURI SPECIFICE: TABELUL DE ORDINE ---
+    .position-panel {
+      .panel-header {
+        margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #cbd5e1;
+        h3 { margin: 0; color: #1e293b; font-size: 1.25rem; }
+      }
 
-      button {
-        flex: 1;
-        padding: 0.75rem;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: white;
-        border: none;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        transition: transform 0.1s, opacity 0.2s;
+      .table-container {
+        overflow-y: auto; 
+        max-height: 22rem; 
+      }
 
-        &:active {
-          transform: scale(0.98);
+      .orders-table {
+        width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;
+
+        th { position: sticky; top: 0; background-color: #f8fafc; padding: 0.75rem 0.5rem; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0; z-index: 1; }
+        td { padding: 0.75rem 0.5rem; border-bottom: 1px solid #e2e8f0; color: #334155; vertical-align: middle; }
+        tr:hover td { background-color: #f1f5f9; }
+
+        .side-badge {
+          padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem;
+          &.buy { background-color: #d1fae5; color: #059669; }
+          &.sell { background-color: #fee2e2; color: #dc2626; }
         }
 
-        &:hover {
-          opacity: 0.9;
-        }
-      }
-
-      .btn-buy {
-        background-color: #26a69a; // Verdele din graficul tău
-      }
-
-      .btn-sell {
-        background-color: #ef5350; // Roșul din graficul tău
-      }
-    }
-
-    .trade-alert {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      border-radius: 0.25rem;
-      font-weight: 600;
-      text-align: center;
-
-      &.success {
-        background-color: #d1fae5;
-        color: #065f46;
-        border: 1px solid #10b981;
-      }
-
-      &.error {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #ef4444;
+        .status-text { font-weight: 600; &.filled { color: #2563eb; } }
+        .date-col { color: #64748b; font-size: 0.85rem; }
+        .no-data { text-align: center; padding: 2rem; color: #94a3b8; font-style: italic; }
       }
     }
   }

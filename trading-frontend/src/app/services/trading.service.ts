@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TradeRequest, TradeResponse } from '../models/trade.model';
+import { OrderResponse, TradeRequest, TradeResponse } from '../models/trade.model';
 import { PortfolioResponse } from '../models/portfolio.model';
 
 @Injectable({
@@ -22,5 +22,9 @@ export class TradingService {
   
   getPortfolio(): Observable<PortfolioResponse> {
     return this.http.get<PortfolioResponse>(`${this.apiUrl}/portfolio`);
+  }
+  
+  getOrdersBySymbol(symbol: string): Observable<OrderResponse[]> {
+    return this.http.get<OrderResponse[]>(`${this.apiUrl}/orders?symbol=${symbol}`);
   }
 }

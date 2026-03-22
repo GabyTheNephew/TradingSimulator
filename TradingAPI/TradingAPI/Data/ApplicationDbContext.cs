@@ -9,5 +9,6 @@ namespace TradingAPI.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
         public DbSet<PortfolioItem> PortfolioItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }

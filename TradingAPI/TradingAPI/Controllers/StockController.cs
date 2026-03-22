@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using TradingAPI.Models.DTOs;
 using TradingAPI.Models.Enums;
 using TradingAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TradingAPI.Controllers
 {
@@ -54,6 +55,15 @@ namespace TradingAPI.Controllers
             }
 
             return Ok(history);
+        }
+        [HttpGet("search/{symbol}")]
+        public async Task<ActionResult<StockQuoteDto>> SearchStock(string symbol)
+        {
+            // Aici e cheia! Trebuie să apeleze GetStockSnapshotAsync
+            var stockData = await _alpacaService.GetStockSnapshotAsync(symbol);
+
+            if (stockData == null) return NotFound();
+            return Ok(stockData);
         }
     }
 }

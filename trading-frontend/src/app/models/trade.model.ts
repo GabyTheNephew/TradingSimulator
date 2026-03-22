@@ -16,3 +16,27 @@ export interface PortfolioItem{
   quantity: number;
   averagePrice: number;
 }
+
+export interface OrderResponse {
+  id: number;
+  symbol: string;
+  side: string;
+  quantity: number;
+  filledQuantity: number;
+  averageFillPrice: number;
+  status: string;
+  createdAt: string; 
+}
+
+export interface StockQuote {
+  symbol: string;
+  price: number;
+  bid: number;
+  ask: number;
+  changePercent: number;
+  open: number;
+  high: number;
+  low: number;
+  previousClose: number;
+  volume: number;
+}

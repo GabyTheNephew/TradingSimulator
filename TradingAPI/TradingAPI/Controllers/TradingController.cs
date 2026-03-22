@@ -60,5 +60,24 @@ namespace TradingAPI.Controllers
 
             return Ok(portfolioData);
         }
+        [HttpGet("orders")]
+        public async Task<ActionResult<List<OrderResponseDto>>> GetAllOrders()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var orders = await _tradingService.GetAllOrdersAsync(userId);
+            return Ok(orders);
+        }
+
+        [HttpGet("orders/{symbol}")]
+        public async Task<ActionResult<List<OrderResponseDto>>> GetOrdersBySymbol(string symbol)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var orders = await _tradingService.GetOrdersBySymbolAsync(userId, symbol);
+            return Ok(orders);
+        }
     }
 }

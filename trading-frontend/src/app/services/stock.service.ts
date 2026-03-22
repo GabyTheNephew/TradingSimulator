@@ -13,11 +13,17 @@ export class StockService {
 
   constructor (private http: HttpClient){}
 
+  // public searchStock(symbol: string):Observable<any>{
+  //   const token = localStorage.getItem('jwtToken');
+  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  //   return this.http.get(`${this.apiUrl}/${symbol}`, {headers});
+  // }
   public searchStock(symbol: string):Observable<any>{
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get(`${this.apiUrl}/${symbol}`, {headers});
+    return this.http.get(`${this.apiUrl}/search/${symbol}`, {headers});
   }
 
   public getStockHistory(symbol: string, timeframe: ChartTimeframe): Observable<HistoricalBar[]>{
