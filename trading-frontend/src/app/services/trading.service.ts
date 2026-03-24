@@ -27,4 +27,8 @@ export class TradingService {
   getOrdersBySymbol(symbol: string): Observable<OrderResponse[]> {
     return this.http.get<OrderResponse[]>(`${this.apiUrl}/orders?symbol=${symbol}`);
   }
+
+  cancelOrder(orderId: number): Observable<TradeResponse> {
+    return this.http.post<TradeResponse>(`${this.apiUrl}/cancel/${orderId}`, {});
+  }
 }

@@ -333,9 +333,35 @@
           &.sell { background-color: #fee2e2; color: #dc2626; }
         }
 
-        .status-text { font-weight: 600; &.filled { color: #2563eb; } }
+        .status-text {
+          font-weight: 600;
+          padding: 0.2rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+
+          // Stiluri noi pentru engine-ul realist
+          &.filled { color: #059669; background-color: #d1fae5; } // Verde pentru succes complet
+          &.pending { color: #d97706; background-color: #fef3c7; } // Portocaliu pentru în așteptare
+          &.partiallyfilled { color: #2563eb; background-color: #dbeafe; } // Albastru pentru parțial
+        }
         .date-col { color: #64748b; font-size: 0.85rem; }
         .no-data { text-align: center; padding: 2rem; color: #94a3b8; font-style: italic; }
+        .btn-cancel {
+          background-color: transparent;
+          color: #ef4444;
+          border: 1px solid #ef4444;
+          padding: 0.2rem 0.5rem;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.75rem;
+          font-weight: 600;
+          transition: all 0.2s;
+
+          &:hover {
+            background-color: #ef4444;
+            color: white;
+          }
+        }
       }
     }
   }

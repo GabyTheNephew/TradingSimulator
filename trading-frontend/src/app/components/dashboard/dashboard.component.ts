@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StockService } from '../../services/stock.service';
 import { Router } from '@angular/router';
@@ -11,6 +11,8 @@ import { ChartType } from '../../models/enums/chart-type.enum';
 import { TradingService } from '../../services/trading.service';
 import { OrderResponse, StockQuote, TradeRequest } from '../../models/trade.model';
 import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
+import { Subscription, interval } from 'rxjs';
+import { OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +21,7 @@ import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
   public searchQuery: string = '';
   public stockData: StockQuote | null = null;
   public errorMessage: string = '';
@@ -66,13 +68,53 @@ export class DashboardComponent {
 
   public symbolOrders: OrderResponse[] = [];
 
+  private pollingSubscription?: Subscription;
+
   constructor(private stockService: StockService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private tradingService: TradingService) { }
+  ngOnDestroy(): void {
+    this.stopPolling();
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit() {
     this.loadUserProfile();
+  }
+
+  public cancelOrder(orderId: number): void {
+    this.tradingService.cancelOrder(orderId).subscribe({
+      next: (res) => {
+        this.tradeMessage = res.message;
+        this.isTradeSuccess = true;
+        this.loadUserProfile();
+        this.loadSymbolOrders(this.searchedSymbol);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.tradeMessage = `Error: ${err.error.message || 'Failed to cancel order'}`;
+        this.isTradeSuccess = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private startPolling(symbol: string): void {
+    this.stopPolling(); // Oprim orice ceas vechi ca să nu se dubleze
+    
+    // 5000 milisecunde = 5 secunde
+    this.pollingSubscription = interval(5000).subscribe(() => {
+      console.log(`[Polling] Fetching live data for ${symbol} at ${new Date().toLocaleTimeString()}`);
+      this.loadSymbolOrders(symbol);
+      this.loadUserProfile(); // Actualizăm și balanța live!
+    });
+  }
+
+  private stopPolling(): void {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
   }
 
   // Returnează doar elementul din portofoliu care corespunde cu acțiunea căutată curent
@@ -119,6 +161,7 @@ export class DashboardComponent {
         this.searchedSymbol = this.searchQuery;
         this.loadSymbolOrders(this.searchedSymbol);
         this.loadChartHistory(this.searchedSymbol, this.selectedCandle);
+        this.startPolling(this.searchedSymbol);
         this.cdr.detectChanges();
         // console.log("Symbol orders: ", this.symbolOrders);
       },

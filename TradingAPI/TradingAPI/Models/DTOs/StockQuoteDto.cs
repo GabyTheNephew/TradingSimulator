@@ -14,5 +14,7 @@
         public decimal Low { get; set; }
         public decimal PreviousClose { get; set; }
         public decimal Volume { get; set; }
+        public decimal BidSize { get; set; }
+        public decimal AskSize { get; set; }
     }
 }

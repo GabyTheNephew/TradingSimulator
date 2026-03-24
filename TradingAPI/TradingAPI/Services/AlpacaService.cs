@@ -144,7 +144,9 @@ namespace TradingAPI.Services
                     High = snapshot.CurrentDailyBar?.High ?? 0m,
                     Low = snapshot.CurrentDailyBar?.Low ?? 0m,
                     Volume = snapshot.CurrentDailyBar?.Volume ?? 0m,
-                    PreviousClose = prevClose
+                    PreviousClose = prevClose,
+                    BidSize = snapshot.Quote?.BidSize ?? 0m,
+                    AskSize = snapshot.Quote?.AskSize ?? 0m
                 };
             }
             catch (Exception ex)

@@ -79,5 +79,19 @@ namespace TradingAPI.Controllers
             var orders = await _tradingService.GetOrdersBySymbolAsync(userId, symbol);
             return Ok(orders);
         }
+
+        [HttpPost("cancel/{orderId}")]
+        public async Task<IActionResult> CancelOrder(int orderId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var result = await _tradingService.CancelOrderAsync(userId, orderId);
+
+            if (!result.Success)
+                return BadRequest(new { Message = result.Message });
+
+            return Ok(result);
+        }
     }
 }

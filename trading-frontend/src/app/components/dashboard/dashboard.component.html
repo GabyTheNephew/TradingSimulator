@@ -184,6 +184,7 @@
                                 <th>Fill Price</th>
                                 <th>Status</th>
                                 <th>Date & Time</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -199,11 +200,19 @@
                                 <td>{{ order.filledQuantity }}</td>
                                 <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
                                 <td>
-                                    <span class="status-text" [class.filled]="order.status === 'Filled'">
-                                        {{ order.status }}
-                                    </span>
-                                </td>
+                                        <span class="status-text" 
+                                              [class.filled]="order.status === 'Filled'"
+                                              [class.pending]="order.status === 'Pending'"
+                                              [class.partiallyfilled]="order.status === 'PartiallyFilled'">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
                                 <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
+                                <td>
+                                    @if (order.status === 'Pending' || order.status === 'PartiallyFilled') {
+                                        <button class="btn-cancel" (click)="cancelOrder(order.id)">Cancel</button>
+                                    }
+                                </td>
                             </tr>
                             } @empty {
                             <tr>

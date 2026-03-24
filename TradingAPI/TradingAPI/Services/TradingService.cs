@@ -19,75 +19,176 @@ namespace TradingAPI.Services
             _alpacaService = service;
         }
 
+        //public async Task<TradeResponseDto> BuyAsync(string userId, TradeRequestDto request)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    if (user == null)
+        //        return new TradeResponseDto { Success = false,
+        //            Message = "Utilizatorul nu a fost găsit." };
+
+        //    var quote = await _alpacaService.GetLatestQuoteAsync(request.Symbol.ToUpper());
+        //    if (quote == null)
+        //        return new TradeResponseDto { Success = false,
+        //            Message = $"Nu am putut obține prețul pentru {request.Symbol}" };
+
+        //    decimal currentPrice = quote.AskPrice;
+        //    decimal totalCost = currentPrice * request.Quantity;
+
+        //    if(user.Balance < totalCost)
+        //    {
+        //        return new TradeResponseDto { Success = false,
+        //            Message = $"Insuficient funds. Total cost: {totalCost}, Balance: {user.Balance}" };
+        //    }
+
+        //    user.Balance -= totalCost;
+
+        //    var portfolioItem = await _context.PortfolioItems
+        //        .FirstOrDefaultAsync(portfolioItem => portfolioItem.UserId == userId
+        //        && portfolioItem.Symbol == request.Symbol.ToUpper());
+
+        //    if(portfolioItem == null)
+        //    {
+        //        portfolioItem = new PortfolioItem
+        //        {
+        //            UserId = userId,
+        //            Symbol = request.Symbol.ToUpper(),
+        //            Quantity = request.Quantity,
+        //            AveragePrice = currentPrice
+        //        };
+        //        _context.PortfolioItems.Add(portfolioItem);
+        //    }
+        //    else
+        //    {
+        //        decimal totalValue = (portfolioItem.Quantity * portfolioItem.AveragePrice) + totalCost;
+        //        portfolioItem.Quantity += request.Quantity;
+        //        portfolioItem.AveragePrice = totalValue / portfolioItem.Quantity;
+        //    }
+
+        //    var order = new Order
+        //    {
+        //        UserId = userId,
+        //        Symbol = request.Symbol,
+        //        Side = OrderSide.Buy,
+        //        Quantity = request.Quantity,
+        //        FilledQuantity = request.Quantity, // Deocamdată primești tot ce ai cerut instant
+        //        AverageFillPrice = currentPrice,
+        //        Status = OrderStatus.Filled,       // Statusul e direct Filled
+        //        CreatedAt = DateTime.UtcNow,
+        //        UpdatedAt = DateTime.UtcNow
+        //    };
+        //    _context.Orders.Add(order);
+
+        //    await _context.SaveChangesAsync();
+
+        //    return new TradeResponseDto
+        //    {
+        //        Success = true,
+        //        Message = "Transaction succesful!",
+        //        NewBalance = user.Balance,
+        //        PortfolioItem = portfolioItem
+        //    };
+        //}
+        //public async Task<TradeResponseDto> SellAsync(string userId, TradeRequestDto request)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    if (user == null)
+        //        return new TradeResponseDto { Success = false, Message = "User not found." };
+
+        //    var portfolioItem = await _context.PortfolioItems
+        //        .FirstOrDefaultAsync(p => p.UserId == userId && p.Symbol == request.Symbol.ToUpper());
+
+        //    if (portfolioItem == null || portfolioItem.Quantity < request.Quantity)
+        //        return new TradeResponseDto { Success = false, Message = "Not enough quantity to sell this action." };
+
+        //    var quote = await _alpacaService.GetLatestQuoteAsync(request.Symbol.ToUpper());
+        //    if (quote == null)
+        //        return new TradeResponseDto { Success = false, Message = $"Failed to fetch price for {request.Symbol}" };
+
+        //    decimal currentPrice = quote.BidPrice;
+        //    decimal totalRevenue = currentPrice * request.Quantity;
+
+        //    user.Balance += totalRevenue;
+        //    portfolioItem.Quantity -= request.Quantity;
+
+        //    if (portfolioItem.Quantity == 0)
+        //    {
+        //        _context.PortfolioItems.Remove(portfolioItem);
+        //    }
+
+        //    var order = new Order
+        //    {
+        //        UserId = userId,
+        //        Symbol = request.Symbol,
+        //        Side = OrderSide.Sell,
+        //        Quantity = request.Quantity,
+        //        FilledQuantity = request.Quantity,
+        //        AverageFillPrice = currentPrice,
+        //        Status = OrderStatus.Filled,
+        //        CreatedAt = DateTime.UtcNow,
+        //        UpdatedAt = DateTime.UtcNow
+        //    };
+        //    _context.Orders.Add(order);
+
+        //    await _context.SaveChangesAsync();
+
+        //    return new TradeResponseDto
+        //    {
+        //        Success = true,
+        //        Message = "Transaction succesful!",
+        //        NewBalance = user.Balance,
+        //        RemainingQuantity = portfolioItem.Quantity
+        //    };
+        //}
+
         public async Task<TradeResponseDto> BuyAsync(string userId, TradeRequestDto request)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
-                return new TradeResponseDto { Success = false,
-                    Message = "Utilizatorul nu a fost găsit." };
+                return new TradeResponseDto { Success = false, Message = "User not found." };
 
-            var quote = await _alpacaService.GetLatestQuoteAsync(request.Symbol.ToUpper());
-            if (quote == null)
-                return new TradeResponseDto { Success = false,
-                    Message = $"Nu am putut obține prețul pentru {request.Symbol}" };
+            // 1. Get the best available price estimation
+            var snapshot = await _alpacaService.GetStockSnapshotAsync(request.Symbol);
+            if (snapshot == null)
+                return new TradeResponseDto { Success = false, Message = $"Failed to fetch price for {request.Symbol}" };
 
-            decimal currentPrice = quote.AskPrice;
-            decimal totalCost = currentPrice * request.Quantity;
+            // Use Ask price if market is open, otherwise use last trade price
+            decimal estimatedPrice = snapshot.Ask > 0 ? snapshot.Ask : snapshot.Price;
+            decimal estimatedTotalCost = estimatedPrice * request.Quantity;
 
-            if(user.Balance < totalCost)
+            // 2. Check funds
+            if (user.Balance < estimatedTotalCost)
             {
-                return new TradeResponseDto { Success = false,
-                    Message = $"Insuficient funds. Total cost: {totalCost}, Balance: {user.Balance}" };
+                return new TradeResponseDto { Success = false, Message = "Insufficient funds for this order." };
             }
 
-            user.Balance -= totalCost;
+            // 3. LOCK FUNDS: Deduct money immediately so it can't be double-spent
+            user.Balance -= estimatedTotalCost;
 
-            var portfolioItem = await _context.PortfolioItems
-                .FirstOrDefaultAsync(portfolioItem => portfolioItem.UserId == userId
-                && portfolioItem.Symbol == request.Symbol.ToUpper());
-
-            if(portfolioItem == null)
-            {
-                portfolioItem = new PortfolioItem
-                {
-                    UserId = userId,
-                    Symbol = request.Symbol.ToUpper(),
-                    Quantity = request.Quantity,
-                    AveragePrice = currentPrice
-                };
-                _context.PortfolioItems.Add(portfolioItem);
-            }
-            else
-            {
-                decimal totalValue = (portfolioItem.Quantity * portfolioItem.AveragePrice) + totalCost;
-                portfolioItem.Quantity += request.Quantity;
-                portfolioItem.AveragePrice = totalValue / portfolioItem.Quantity;
-            }
-
+            // 4. Create PENDING Order (Do not add to Portfolio yet!)
             var order = new Order
             {
                 UserId = userId,
-                Symbol = request.Symbol,
+                Symbol = request.Symbol.ToUpper(),
                 Side = OrderSide.Buy,
                 Quantity = request.Quantity,
-                FilledQuantity = request.Quantity, // Deocamdată primești tot ce ai cerut instant
-                AverageFillPrice = currentPrice,
-                Status = OrderStatus.Filled,       // Statusul e direct Filled
+                FilledQuantity = 0, // Nothing filled yet
+                AverageFillPrice = 0, // No price yet
+                Status = OrderStatus.Pending, // Placed in the queue
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            _context.Orders.Add(order);
 
+            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             return new TradeResponseDto
             {
                 Success = true,
-                Message = "Transaction succesful!",
-                NewBalance = user.Balance,
-                PortfolioItem = portfolioItem
+                Message = "Buy order placed successfully and is pending execution.",
+                NewBalance = user.Balance
             };
         }
+
         public async Task<TradeResponseDto> SellAsync(string userId, TradeRequestDto request)
         {
             var user = await _context.Users.FindAsync(userId);
@@ -97,48 +198,42 @@ namespace TradingAPI.Services
             var portfolioItem = await _context.PortfolioItems
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.Symbol == request.Symbol.ToUpper());
 
+            // 1. Check if user has enough shares
             if (portfolioItem == null || portfolioItem.Quantity < request.Quantity)
-                return new TradeResponseDto { Success = false, Message = "Not enough quantity to sell this action." };
+                return new TradeResponseDto { Success = false, Message = "Not enough shares to sell." };
 
-            var quote = await _alpacaService.GetLatestQuoteAsync(request.Symbol.ToUpper());
-            if (quote == null)
-                return new TradeResponseDto { Success = false, Message = $"Failed to fetch price for {request.Symbol}" };
-
-            decimal currentPrice = quote.BidPrice;
-            decimal totalRevenue = currentPrice * request.Quantity;
-
-            user.Balance += totalRevenue;
+            // 2. LOCK ASSETS: Deduct shares immediately from portfolio
             portfolioItem.Quantity -= request.Quantity;
-
             if (portfolioItem.Quantity == 0)
             {
                 _context.PortfolioItems.Remove(portfolioItem);
             }
 
+            // 3. Create PENDING Order (Do not add money to balance yet!)
             var order = new Order
             {
                 UserId = userId,
-                Symbol = request.Symbol,
+                Symbol = request.Symbol.ToUpper(),
                 Side = OrderSide.Sell,
                 Quantity = request.Quantity,
-                FilledQuantity = request.Quantity,
-                AverageFillPrice = currentPrice,
-                Status = OrderStatus.Filled,
+                FilledQuantity = 0,
+                AverageFillPrice = 0,
+                Status = OrderStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            _context.Orders.Add(order);
 
+            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             return new TradeResponseDto
             {
                 Success = true,
-                Message = "Transaction succesful!",
-                NewBalance = user.Balance,
-                RemainingQuantity = portfolioItem.Quantity
+                Message = "Sell order placed successfully and is pending execution.",
+                NewBalance = user.Balance // Balance is unchanged here, but we return it
             };
         }
+
         public async Task<PortfolioResponseDto?> GetPortfolioAsync(string userId)
         {
             var user = await _context.Users.FindAsync(userId);
@@ -201,6 +296,61 @@ namespace TradingAPI.Services
                 Status = o.Status.ToString(),
                 CreatedAt = o.CreatedAt
             }).ToList();
+        }
+        public async Task<TradeResponseDto> CancelOrderAsync(string userId, int orderId)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+
+            if (order == null)
+                return new TradeResponseDto { Success = false, Message = "Order not found." };
+
+            if (order.Status == OrderStatus.Filled || order.Status == OrderStatus.Cancelled)
+                return new TradeResponseDto { Success = false, Message = "Order cannot be cancelled in its current state." };
+
+            decimal remainingQuantity = order.Quantity - order.FilledQuantity;
+
+            // Refund logic
+            if (order.Side == OrderSide.Sell)
+            {
+                // Refund shares back to portfolio
+                var portfolioItem = await _context.PortfolioItems
+                    .FirstOrDefaultAsync(p => p.UserId == userId && p.Symbol == order.Symbol);
+
+                if (portfolioItem == null)
+                {
+                    _context.PortfolioItems.Add(new PortfolioItem
+                    {
+                        UserId = userId,
+                        Symbol = order.Symbol,
+                        Quantity = remainingQuantity,
+                        AveragePrice = 0 // Restored shares
+                    });
+                }
+                else
+                {
+                    portfolioItem.Quantity += remainingQuantity;
+                }
+            }
+            else if (order.Side == OrderSide.Buy)
+            {
+                // Refund money. Note: For perfect accuracy, we should save LockedPrice in the Order table.
+                // For now, we refund based on current market price to unblock the user.
+                var snapshot = await _alpacaService.GetStockSnapshotAsync(order.Symbol);
+                decimal currentPrice = snapshot?.Ask > 0 ? snapshot.Ask : (snapshot?.Price ?? 0m);
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    user.Balance += (remainingQuantity * currentPrice);
+                }
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new TradeResponseDto { Success = true, Message = "Order cancelled successfully." };
         }
     }
 }
