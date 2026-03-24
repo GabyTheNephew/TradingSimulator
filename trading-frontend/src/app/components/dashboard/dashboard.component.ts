@@ -225,9 +225,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       case ChartRange.OneYear: fromDate.setFullYear(fromDate.getFullYear() - 1); break;
       case ChartRange.OneMonth: fromDate.setMonth(fromDate.getMonth() - 1); break;
       case ChartRange.OneDay: fromDate.setDate(fromDate.getDate() - 1); break;
-      case ChartRange.OneHour: fromDate.setHours(fromDate.getHours() - 1); break;
-      case ChartRange.ThirtyMinutes: fromDate.setMinutes(fromDate.getMinutes() - 30); break;
-      case ChartRange.FifteenMinutes: fromDate.setMinutes(fromDate.getMinutes() - 15); break;
     }
 
     const isDailyOrMonthly = this.selectedCandle === ChartTimeframe.OneDay || this.selectedCandle === ChartTimeframe.OneMonth;

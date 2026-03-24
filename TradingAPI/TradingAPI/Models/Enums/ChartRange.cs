@@ -4,9 +4,6 @@
     {
         OneYear,
         OneMonth,
-        OneDay,
-        OneHour,
-        ThirtyMinutes,
-        FifteenMinutes
+        OneDay
     }
 }

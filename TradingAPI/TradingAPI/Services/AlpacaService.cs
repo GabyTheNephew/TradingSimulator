@@ -44,17 +44,6 @@ namespace TradingAPI.Services
                 var into = DateTime.Now.AddMinutes(-20);
                 DateTime from = into;
 
-                //switch(range)
-                //{
-                //    case ChartRange.OneYear: from = into.AddYears(-1); break;
-                //    case ChartRange.OneMonth: from = into.AddMonths(-1); break;
-                //    case ChartRange.OneDay: from = into.AddDays(-1); break;
-                //    case ChartRange.OneHour: from = into.AddHours(-1); break;
-                //    case ChartRange.ThirtyMinutes: from = into.AddMinutes(-30); break;
-                //    case ChartRange.FifteenMinutes: from = into.AddMinutes(-15); break;
-                //    default: from = into.AddMonths(-1); break;
-                //}
-
                 switch (timeframe)
                 {
                     case ChartTimeframe.OneMonth:
