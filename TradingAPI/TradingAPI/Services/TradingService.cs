@@ -129,6 +129,13 @@ namespace TradingAPI.Services
                 })
                 .ToListAsync();
 
+            foreach (var item in portfolioItems)
+            {
+                var snapshot = await _alpacaService.GetStockSnapshotAsync(item.Symbol);
+                // Dacă piața e închisă sau dă eroare, folosim snapshot.Price, altfel prețul de achiziție ca fallback
+                item.CurrentPrice = snapshot?.Price > 0 ? snapshot.Price : item.AveragePrice;
+            }
+
             return new PortfolioResponseDto
             {
                 Balance = user.Balance,

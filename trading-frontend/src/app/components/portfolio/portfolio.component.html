@@ -1,0 +1,68 @@
+<div class="portfolio-container">
+    <header class="page-header">
+        <h2>My Portfolio</h2>
+        <div class="header-actions">
+            <a routerLink="/dashboard" class="btn-nav">Back to Trading</a>
+        </div>
+    </header>
+
+    <div class="summary-cards">
+        <div class="card">
+            <span class="label">Total Account Value</span>
+            <span class="value">${{ accountTotalValue | number:'1.2-2' }}</span>
+        </div>
+        <div class="card">
+            <span class="label">Cash Balance</span>
+            <span class="value">${{ cashBalance | number:'1.2-2' }}</span>
+        </div>
+        <div class="card">
+            <span class="label">Stock Value</span>
+            <span class="value">${{ totalCurrentValue | number:'1.2-2' }}</span>
+        </div>
+        <div class="card pnl-card" [class.profit]="totalPnL >= 0" [class.loss]="totalPnL < 0">
+            <span class="label">Total Profit / Loss</span>
+            <span class="value">
+                {{ totalPnL >= 0 ? '+' : '' }}${{ totalPnL | number:'1.2-2' }}
+                <small>({{ totalPnLPercent >= 0 ? '+' : '' }}{{ totalPnLPercent | number:'1.2-2' }}%)</small>
+            </span>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <h3>Positions</h3>
+        <table class="portfolio-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Shares</th>
+                    <th>Avg Cost</th>
+                    <th>Current Price</th>
+                    <th>Market Value</th>
+                    <th>Total P/L</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of portfolioItems; track item.symbol) {
+                    <tr>
+                        <td class="symbol-cell">{{ item.symbol | uppercase }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.averagePrice | number:'1.2-2' }}</td>
+                        <td>${{ item.currentPrice | number:'1.2-2' }}</td>
+                        <td style="font-weight: 600;">${{ item.quantity * item.currentPrice | number:'1.2-2' }}</td>
+                        <td class="pnl-cell" 
+                            [class.profit]="(item.currentPrice - item.averagePrice) >= 0" 
+                            [class.loss]="(item.currentPrice - item.averagePrice) < 0">
+                            ${{ (item.quantity * item.currentPrice) - (item.quantity * item.averagePrice) | number:'1.2-2' }}
+                            <br>
+                            <small>({{ ((item.currentPrice - item.averagePrice) / item.averagePrice) * 100 | number:'1.2-2' }}%)</small>
+                        </td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td colspan="6" class="no-data">You don't hold any positions yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

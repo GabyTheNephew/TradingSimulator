@@ -1,3 +1,6 @@
+import { PortfolioItem } from "./portfolio.model";
+
+
 export interface TradeRequest {
   symbol: string;
   quantity: number;
@@ -11,11 +14,6 @@ export interface TradeResponse {
   portfolioItem?: PortfolioItem;
 }
 
-export interface PortfolioItem{
-  symbol: string;
-  quantity: number;
-  averagePrice: number;
-}
 
 export interface OrderResponse {
   id: number;

@@ -68,6 +68,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public symbolOrders: OrderResponse[] = [];
 
+  public selectedBottomTab: 'Orders' | 'Position' = 'Orders';
+
   private pollingSubscription?: Subscription;
 
   constructor(private stockService: StockService,
@@ -76,7 +78,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private tradingService: TradingService) { }
   ngOnDestroy(): void {
     this.stopPolling();
-    throw new Error('Method not implemented.');
   }
 
   ngOnInit() {
@@ -143,7 +144,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public get currentPositionPnLPercent(): number {
     const pos = this.currentPosition;
     if (!pos || !this.stockData?.price || pos.averagePrice === 0) return 0;
-    return ((this.stockData.price - pos.averagePrice) / pos.averagePrice) * 100;
+    
+    const totalCost = pos.quantity * pos.averagePrice;
+    
+    // Împărțim Profitul Total la Costul Total Investit
+    return (this.currentPositionPnL / totalCost) * 100;
   }
 
   public onSearch(): void {
@@ -559,6 +564,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: (err) => console.error('Erorr fetching orders:', err)
     });
+  }
+
+  public goToPortfolio(): void {
+    // Router-ul este deja injectat în constructorul tău, deci asta va merge instant!
+    this.router.navigate(['/portfolio']);
   }
 
   public onLogout(): void {

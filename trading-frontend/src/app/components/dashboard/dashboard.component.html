@@ -1,7 +1,10 @@
 <div class="dashboard-container">
     <header>
         <h2>Trading Dashboard</h2>
-        <button class="btn-logout" (click)="onLogout()">Logout</button>
+        <div class="header-actions">
+            <button class="btn-portfolio" (click)="goToPortfolio()">My Portfolio</button>
+            <button class="btn-logout" (click)="onLogout()">Logout</button>
+        </div>
     </header>
 
     <div class="search-section">
@@ -167,57 +170,96 @@
             </div>
 
             <div class="position-panel">
-                <div class="panel-header">
-                    <h3>Order history: {{searchedSymbol | uppercase}}</h3>
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <select [(ngModel)]="selectedBottomTab" class="tab-select">
+                        <option value="Orders">Order History</option>
+                        <option value="Position">Current Position</option>
+                    </select>
+                    <h3 style="margin: 0;">{{searchedSymbol | uppercase}}</h3>
                 </div>
 
                 <div class="table-container">
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Side</th>
-                                <th>Qty</th>
-                                <th>Filled Qty</th>
-                                <th>Fill Price</th>
-                                <th>Status</th>
-                                <th>Date & Time</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (order of symbolOrders; track order.id) {
-                            <tr>
-                                <td>
-                                    <span class="side-badge" [class.buy]="order.side === 'Buy'"
-                                        [class.sell]="order.side === 'Sell'">
-                                        {{ order.side | uppercase }}
-                                    </span>
-                                </td>
-                                <td>{{ order.quantity }}</td>
-                                <td>{{ order.filledQuantity }}</td>
-                                <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
-                                <td>
-                                        <span class="status-text" 
-                                              [class.filled]="order.status === 'Filled'"
-                                              [class.pending]="order.status === 'Pending'"
-                                              [class.partiallyfilled]="order.status === 'PartiallyFilled'">
-                                            {{ order.status }}
+                    @if (selectedBottomTab === 'Orders') {
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Side</th>
+                                    <th>Qty</th>
+                                    <th>Filled Qty</th>
+                                    <th>Fill Price</th>
+                                    <th>Status</th>
+                                    <th>Date & Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (order of symbolOrders; track order.id) {
+                                <tr>
+                                    <td>
+                                        <span class="side-badge" [class.buy]="order.side === 'Buy'"
+                                            [class.sell]="order.side === 'Sell'">
+                                            {{ order.side | uppercase }}
                                         </span>
                                     </td>
-                                <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
-                                <td>
-                                    @if (order.status === 'Pending' || order.status === 'PartiallyFilled') {
-                                        <button class="btn-cancel" (click)="cancelOrder(order.id)">Cancel</button>
-                                    }
-                                </td>
-                            </tr>
-                            } @empty {
-                            <tr>
-                                <td colspan="6" class="no-data">There aren't orders for this stock.</td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
+                                    <td>{{ order.quantity }}</td>
+                                    <td>{{ order.filledQuantity }}</td>
+                                    <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
+                                    <td>
+                                            <span class="status-text" 
+                                                  [class.filled]="order.status === 'Filled'"
+                                                  [class.pending]="order.status === 'Pending'"
+                                                  [class.partiallyfilled]="order.status === 'PartiallyFilled'">
+                                                {{ order.status }}
+                                            </span>
+                                        </td>
+                                    <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
+                                    <td>
+                                        @if (order.status === 'Pending' || order.status === 'PartiallyFilled') {
+                                            <button class="btn-cancel" (click)="cancelOrder(order.id)">Cancel</button>
+                                        }
+                                    </td>
+                                </tr>
+                                } @empty {
+                                <tr>
+                                    <td colspan="7" class="no-data">There aren't orders for this stock.</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    } @else {
+                        <table class="orders-table position-table">
+                            <thead>
+                                <tr>
+                                    <th>Shares</th>
+                                    <th>Avg Cost</th>
+                                    <th>Current</th>
+                                    <th>Market Value</th>
+                                    <th>Total P/L</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (currentPosition && stockData.price) {
+                                <tr>
+                                    <td style="font-weight: 600;">{{ currentPosition.quantity }}</td>
+                                    <td>${{ currentPosition.averagePrice | number:'1.2-2' }}</td>
+                                    <td>${{ stockData.price | number:'1.2-2' }}</td>
+                                    <td style="font-weight: 600;">${{ currentPositionValue | number:'1.2-2' }}</td>
+                                    <td class="pnl-cell" 
+                                        [class.profit]="currentPositionPnL >= 0" 
+                                        [class.loss]="currentPositionPnL < 0">
+                                        {{ currentPositionPnL >= 0 ? '+' : '' }}${{ currentPositionPnL | number:'1.2-2' }} 
+                                        <br>
+                                        <small>({{ currentPositionPnLPercent >= 0 ? '+' : '' }}{{ currentPositionPnLPercent | number:'1.2-2' }}%)</small>
+                                    </td>
+                                </tr>
+                                } @else {
+                                <tr>
+                                    <td colspan="5" class="no-data">You don't have an open position for {{searchedSymbol | uppercase}}.</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 </div>
             </div>
         </div>
