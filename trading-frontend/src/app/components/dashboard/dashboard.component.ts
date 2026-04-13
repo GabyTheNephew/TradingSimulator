@@ -84,6 +84,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadUserProfile();
   }
 
+  public goToTutorial(fragmentId?: string): void {
+    if (fragmentId) {
+        this.router.navigate(['/tutorial'], { fragment: fragmentId });
+    } else {
+        this.router.navigate(['/tutorial']);
+    }
+}
+
   public cancelOrder(orderId: number): void {
     this.tradingService.cancelOrder(orderId).subscribe({
       next: (res) => {
@@ -152,18 +160,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
   public getChartTypeDescription(): string {
     switch (this.selectedChartType) {
-      case ChartType.Candlestick:
-        return "Shows the price journey using boxes. It reveals the battle between buyers and sellers.";
-      case ChartType.Line:
-        return "Connects the closing prices. It's the simplest way to see the overall price path.";
-      case ChartType.Area:
-        return "Similar to a Line chart, but colored underneath to help you see the volume of price moves.";
-      case ChartType.Baseline:
-        return "Shows if the price is currently above (green) or below (red) a starting point.";
-      default:
-        return "Visual representation of price data.";
+        case ChartType.Candlestick:
+            return "Shows the price journey using boxes. It reveals the battle between buyers and sellers.";
+        case ChartType.Line:
+            return "Connects the closing prices. It's the simplest way to see the overall price path.";
+        case ChartType.Area:
+            return "Similar to a Line chart, but colored underneath to help you see the volume of price moves.";
+        case ChartType.Baseline:
+            return "Shows if the price is currently above (green) or below (red) a starting point.";
+        default:
+            return "Visual representation of price data.";
     }
-  }
+}
   public onSearch(): void {
     if (!this.searchQuery) return;
 

@@ -24,6 +24,23 @@
       gap: 1rem;
       align-items: center;
 
+      .btn-tutorial {
+        padding: 0.5rem 1.5rem;
+        background-color: #e0e7ff;
+        color: #3730a3;
+        border: 1px solid #c7d2fe;
+        border-radius: 0.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #c7d2fe;
+          color: #312e81;
+          border-color: #a5b4fc;
+        }
+      }
+
       .btn-portfolio {
         padding: 0.5rem 1.5rem;
         background-color: #f8fafc;
@@ -814,82 +831,122 @@
 
   [data-tooltip] {
     position: relative;
-    cursor: help;
+    cursor: pointer;
+
+    &::after {
+      content: attr(data-tooltip) "\A\A 🖱️ Click for tutorial";
+      white-space: pre-wrap;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(5px);
+      background: rgba(15, 23, 42, 0.95);
+      color: #ffffff;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      width: max-content;
+      max-width: 280px;
+      text-align: center;
+      line-height: 1.4;
+      z-index: 1000;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.2s ease-in-out;
+      transition-delay: 0.15s;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(5px);
+      border: 8px solid transparent;
+      border-top-color: rgba(15, 23, 42, 0.95);
+      margin-bottom: -0.3rem;
+      z-index: 1000;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.2s ease-in-out;
+      transition-delay: 0.15s;
+    }
+
+    &:hover::after,
+    &:hover::before {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+      transition-delay: 0s;
+    }
   }
 
-  [data-tooltip]:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.95);
-    color: #ffffff;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    width: max-content;
-    max-width: 280px;
-    white-space: normal;
-    text-align: center;
-    line-height: 1.4;
-    z-index: 1000;
-    pointer-events: none;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 0.5rem;
+  th[data-tooltip] {
+    &::after {
+      bottom: auto;
+      top: 100%;
+      margin-bottom: 0;
+      margin-top: 0.5rem;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    &::before {
+      bottom: auto;
+      top: 100%;
+      margin-bottom: 0;
+      margin-top: -0.3rem;
+      border-top-color: transparent;
+      border-bottom-color: rgba(15, 23, 42, 0.95);
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    &:hover::after,
+    &:hover::before {
+      transform: translateX(-50%) translateY(0);
+    }
   }
 
-  [data-tooltip]:hover::before {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: rgba(15, 23, 42, 0.95);
-    margin-bottom: -0.2rem;
-    z-index: 1000;
-    pointer-events: none;
+  th:first-child[data-tooltip] {
+    &::after {
+      left: 0;
+      transform: translateX(0) translateY(-5px);
+    }
+
+    &::before {
+      left: 1rem;
+      transform: translateX(0) translateY(-5px);
+    }
+
+    &:hover::after,
+    &:hover::before {
+      transform: translateX(0) translateY(0);
+    }
   }
 
-  th[data-tooltip]:hover::after {
-    bottom: auto;
-    top: 100%;
-    margin-bottom: 0;
-    margin-top: 0.5rem;
-  }
+  th:last-child[data-tooltip] {
+    &::after {
+      left: auto;
+      right: 0;
+      transform: translateX(0) translateY(-5px);
+    }
 
-  th[data-tooltip]:hover::before {
-    bottom: auto;
-    top: 100%;
-    margin-bottom: 0;
-    margin-top: -0.1rem;
-    border-top-color: transparent;
-    border-bottom-color: rgba(15, 23, 42, 0.95);
-  }
+    &::before {
+      left: auto;
+      right: 1rem;
+      transform: translateX(0) translateY(-5px);
+    }
 
-  th:first-child[data-tooltip]:hover::after {
-    left: 0;
-    transform: translateX(0);
-  }
-
-  th:first-child[data-tooltip]:hover::before {
-    left: 1rem;
-    transform: translateX(0);
-  }
-
-  th:last-child[data-tooltip]:hover::after {
-    left: auto;
-    right: 0;
-    transform: translateX(0);
-  }
-
-  th:last-child[data-tooltip]:hover::before {
-    left: auto;
-    right: 1rem;
-    transform: translateX(0);
-    border-top-color: transparent;
-    border-bottom-color: rgba(15, 23, 42, 0.95);
+    &:hover::after,
+    &:hover::before {
+      transform: translateX(0) translateY(0);
+    }
   }
 }

@@ -1,0 +1,138 @@
+<div class="tutorial-container">
+    <header>
+        <h2>Trading Platform Tutorial</h2>
+        <button class="btn-back" routerLink="/dashboard">Back to Dashboard</button>
+    </header>
+
+    <div class="content-wrapper">
+        <nav class="toc">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="/tutorial#search">Search & Discovery</a></li>
+                <li><a href="/tutorial#chart-controls">Chart Controls & Indicators</a></li>
+                <li><a href="/tutorial#stats">Daily Statistics</a></li>
+                <li><a href="/tutorial#trading">Executing Trades</a></li>
+                <li><a href="/tutorial#orders">Order History</a></li>
+                <li><a href="/tutorial#positions">Current Positions</a></li>
+            </ul>
+        </nav>
+
+        <main class="tutorial-content">
+            <section id="search" class="module">
+                <h3>Search & Discovery</h3>
+                
+                <div class="concept-card">
+                    <h4>Search Bar</h4>
+                    <p>This is your starting point. You can type a company's <strong>ticker symbol</strong> (a unique series of letters representing the stock, like AAPL for Apple or TSLA for Tesla) to pull up its real-time market data and begin analyzing its performance.</p>
+                </div>
+            </section>
+
+            <section id="chart-controls" class="module">
+                <h3>Chart Controls & Indicators</h3>
+
+                <div class="concept-card" id="range">
+                    <h4>Chart Range</h4>
+                    <p>This decides how far back in time you want to look on the chart. You can zoom out to see the overarching trend over a <strong>Full Year</strong>, or zoom in to just see <strong>Today's</strong> market action.</p>
+                </div>
+
+                <div class="concept-card" id="candle">
+                    <h4>Candle Timeframe</h4>
+                    <p>This sets how much time each visual block (candle) on the chart represents. For example, if set to '1 Day', each shape compresses an entire day of trading into a single readable block. It groups thousands of tiny price movements from that period into one consistent visual structure.</p>
+                </div>
+
+                <div class="concept-card" id="type">
+                    <h4>Chart Type</h4>
+                    <p>This changes how the price history is drawn, allowing you to choose the visual style that fits your needs:</p>
+                    <ul>
+                        <li><strong>Candlestick:</strong> Shows the most detail, including price extremes reached during that timeframe (via the "tails" called <em>wicks</em>).</li>
+                        <li><strong>Line:</strong> Connects only the closing prices to provide a cleaner, simpler view of the overall trend.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" id="sma-ema">
+                    <h4>Moving Averages (SMA & EMA)</h4>
+                    <p>These lines "smooth out" chaotic daily price jumps to show you the true direction of the trend. They are calculated by averaging past prices over a set period.</p>
+                    <ul>
+                        <li><strong>SMA (Simple Moving Average):</strong> Calculates a basic mathematical average of previous prices.</li>
+                        <li><strong>EMA (Exponential Moving Average):</strong> Similar to SMA, but gives more importance to recent prices. This makes the line react much faster to breaking news or sudden market shifts.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" id="bollinger">
+                    <h4>Bollinger Bands</h4>
+                    <p>This creates a visual "highway" for the price to help you measure <strong>volatility</strong> (how wildly the price is fluctuating).</p>
+                    <ul>
+                        <li>If the price touches the <strong>upper band</strong>, the stock might be <em>overbought</em> (potentially too expensive at the moment and due for a drop).</li>
+                        <li>If it hits the <strong>lower band</strong>, it might be <em>oversold</em> (potentially at a discount and due for a bounce).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="stats" class="module">
+                <h3>Daily Statistics</h3>
+
+                <div class="concept-card" id="ohlc">
+                    <h4>Open, High, Low, Prev. Close</h4>
+                    <p>This is the daily snapshot, which tells the story of the current trading session:</p>
+                    <ul>
+                        <li><strong>Open & Prev. Close:</strong> 'Open' is the price when the market started this morning, while 'Prev. Close' is yesterday's final price (used as a benchmark to calculate today's gain or loss).</li>
+                        <li><strong>High & Low:</strong> Represent the absolute highest and lowest prices someone was willing to pay during the current session.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" id="volume">
+                    <h4>Volume</h4>
+                    <p>Shows the total number of shares that have changed hands today. High volume indicates strong interest from big investors, hype, or panic selling. A price move on <em>high volume</em> is generally considered more significant than a move on low volume.</p>
+                </div>
+            </section>
+
+            <section id="trading" class="module">
+                <h3>Executing Trades</h3>
+
+                <div class="concept-card" id="balance">
+                    <h4>Balance</h4>
+                    <p>Represents the settled cash available in your account that you can use to buy stocks. You cannot spend more money than what is displayed here.</p>
+                </div>
+
+                <div class="concept-card" id="bidask">
+                    <h4>Bid & Ask Quotes</h4>
+                    <p>These are the live market prices dictating what a stock is currently worth:</p>
+                    <ul>
+                        <li><strong>Ask:</strong> The lowest price a seller is willing to accept. This is the price you <strong>pay when you BUY</strong> shares.</li>
+                        <li><strong>Bid:</strong> The highest price a buyer is offering. This is the money you <strong>get when you SELL</strong> shares.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" id="qty-total">
+                    <h4>Quantity & Estimated Total</h4>
+                    <p>You enter the exact number of shares you want to trade. The 'Estimated Total' field multiplies this quantity by the current Ask price to show you a quick on-screen estimate of your expected cost.</p>
+                </div>
+            </section>
+
+            <section id="orders" class="module">
+                <h3>Order History Table</h3>
+                
+                <div class="concept-card" id="table-orders">
+                    <h4>Order Status & Details</h4>
+                    <p>This acts as a receipt of your past actions. It shows if you bought or sold (Side) and how many shares the market successfully processed for you (Filled Qty).</p>
+                    <ul>
+                        <li><strong>Pending Status:</strong> Your order is waiting in the queue because your desired price or quantity isn't available yet. Once the trade goes through, it transitions to <strong>PartiallyFilled</strong> or <strong>Filled</strong>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="positions" class="module">
+                <h3>Current Positions Table</h3>
+
+                <div class="concept-card" id="table-positions">
+                    <h4>P/L (Profit & Loss) and Value</h4>
+                    <p>Provides a real-time valuation of the investments you currently hold:</p>
+                    <ul>
+                        <li><strong>Market Value:</strong> How much cash you would receive if you sold all your shares this very second.</li>
+                        <li><strong>Total P/L:</strong> Compares your <strong>Avg Cost</strong> (the average price you paid to buy) against the current market price, showing exactly how much money you have gained (in green) or lost (in red).</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
