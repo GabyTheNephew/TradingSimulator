@@ -8,24 +8,28 @@
     </header>
 
     <div class="search-section">
-        <input type="text" [(ngModel)]="searchQuery" placeholder="Search a symbol (ex: AAPL - Apple)">
-        <button class="btn-search" (click)="onSearch()">Search</button>
+        <div class="search-wrapper"
+            data-tooltip="Type a company's short name (like AAPL for Apple) to see its chart and start trading.">
+            <input type="text" [(ngModel)]="searchQuery" placeholder="Search a symbol (ex: AAPL - Apple)">
+            <button class="btn-search" (click)="onSearch()">Search</button>
+        </div>
     </div>
 
     @if(errorMessage){
     <div class="error-msg">{{errorMessage}}</div>
     }
+
     @if(stockData){
     <div class="stock-card">
         <div class="card-header">
             <div class="header-top-row">
-                <div class="symbol-price-group">
+                <div class="symbol-price-group"
+                    data-tooltip="The current price of one share, and how much it went up or down today.">
                     <h2>{{searchedSymbol | uppercase}}</h2>
 
                     @if(stockData.price){
                     <div class="price-display">
                         <span class="current-price">${{stockData.price | number: '1.2-2'}}</span>
-
                         <span class="price-change" [ngClass]="getChangeClass()">
                             {{ getPriceDiff() > 0 ? '+' : '' }}{{ getPriceDiff() | number:'1.2-2' }}
                             ({{ getPriceDiff() > 0 ? '+' : '' }}{{ getDailyChangePercent() | number:'1.2-2' }}%)
@@ -35,7 +39,8 @@
                 </div>
 
                 <div class="chart-controls">
-                    <div class="control-group">
+                    <div class="control-group"
+                        data-tooltip="Choose how much history to look at: a whole year, a month, or just today.">
                         <label>Range:</label>
                         <select [(ngModel)]="selectedRange" (change)="onChartSettingsChange()">
                             <option [value]="ChartRangeEnum.OneYear">1 Year</option>
@@ -44,7 +49,8 @@
                         </select>
                     </div>
 
-                    <div class="control-group">
+                    <div class="control-group"
+                        data-tooltip="Choose what each candle means. If you pick '1 Day', one candle shows the whole day's price movement.">
                         <label>Candle:</label>
                         <select [(ngModel)]="selectedCandle" (change)="onChartSettingsChange()">
                             <option [value]="ChartTimeframeEnum.OneMonth" [disabled]="getRangePrio(selectedRange) < 5">1
@@ -59,6 +65,7 @@
                                 [disabled]="getRangePrio(selectedRange) < 1">15 Min</option>
                         </select>
                     </div>
+
                     <div class="control-group">
                         <label>Type:</label>
                         <select [(ngModel)]="selectedChartType" (change)="onChartSettingsChange()">
@@ -67,50 +74,133 @@
                             <option [value]="ChartTypeEnum.Area">Area</option>
                             <option [value]="ChartTypeEnum.Baseline">Baseline</option>
                         </select>
+                        <div class="selected-type-badge" [attr.data-tooltip]="getChartTypeDescription()">
+                            Graphic type: <span>{{selectedChartType}}</span>
+                        </div>
                     </div>
+
                     <div class="control-group">
                         <label>Indicators:</label>
-                        <div class="checkbox-wrapper" style="display:flex; gap:10px;">
-                            <div>
+                        <div class="checkbox-wrapper">
+                            <div
+                                data-tooltip="Turn on the SMA line. It smooths out the price jumps so you can see the general trend easier.">
                                 <input type="checkbox" id="smaCheck" [(ngModel)]="showSMA"
                                     (change)="onChartSettingsChange()">
-                                <label for="smaCheck" style="cursor:pointer; color:#334155;">SMA</label>
+                                <label for="smaCheck">SMA</label>
                             </div>
-                            <div>
+                            <div data-tooltip="Turn on the EMA line. Like SMA, but reacts faster to recent news.">
                                 <input type="checkbox" id="emaCheck" [(ngModel)]="showEMA"
                                     (change)="onChartSettingsChange()">
-                                <label for="emaCheck" style="cursor:pointer; color:#334155;">EMA</label>
+                                <label for="emaCheck">EMA</label>
                             </div>
-                            <div>
+                            <div
+                                data-tooltip="Turn on Bollinger Bands. A visual 'highway' for the price. If price hits the top, it might drop soon.">
                                 <input type="checkbox" id="bbCheck" [(ngModel)]="showBollinger"
                                     (change)="onChartSettingsChange()">
-                                <label for="bbCheck" style="cursor:pointer; color:#334155;">Bollinger</label>
+                                <label for="bbCheck">Bollinger</label>
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <button class="btn-recenter" (click)="recenterChart()" title="Revenire la prezent">
-                            ⌂ Recenter
-                        </button>
+                    <div class="control-group"
+                        data-tooltip="Lost on the chart? Click here to jump back to the newest price.">
+                        <button class="btn-recenter" (click)="recenterChart()">⌂ Recenter</button>
                     </div>
                 </div>
             </div>
 
             <div class="stats-row">
-                <div class="stat-item"><span class="label">OPEN</span> <span class="value">{{stockData.open |
+                <div class="stat-item" data-tooltip="The price when the market woke up this morning."><span
+                        class="label">OPEN</span> <span class="value">{{stockData.open | number:'1.2-2'}}</span></div>
+                <div class="stat-item" data-tooltip="The absolute highest price someone paid today."><span
+                        class="label">HIGH</span> <span class="value">{{stockData.high | number:'1.2-2'}}</span></div>
+                <div class="stat-item" data-tooltip="The absolute lowest price someone paid today."><span
+                        class="label">LOW</span> <span class="value">{{stockData.low | number:'1.2-2'}}</span></div>
+                <div class="stat-item" data-tooltip="The price when the market went to sleep yesterday."><span
+                        class="label">PREV. CLOSE</span> <span class="value">{{stockData.previousClose |
                         number:'1.2-2'}}</span></div>
-                <div class="stat-item"><span class="label">HIGH</span> <span class="value">{{stockData.high |
-                        number:'1.2-2'}}</span></div>
-                <div class="stat-item"><span class="label">LOW</span> <span class="value">{{stockData.low |
-                        number:'1.2-2'}}</span></div>
-                <div class="stat-item"><span class="label">PREV. CLOSE</span> <span
-                        class="value">{{stockData.previousClose | number:'1.2-2'}}</span></div>
-                <div class="stat-item"><span class="label">VOLUME</span> <span class="value">{{stockData.volume |
-                        number}}</span></div>
+                <div class="stat-item"
+                    data-tooltip="How many shares changed hands today. High numbers mean lots of action!"><span
+                        class="label">VOLUME</span> <span class="value">{{stockData.volume | number}}</span></div>
             </div>
         </div>
 
-        <div #chartContainer class="chart-container"></div>
+        <div class="chart-wrapper">
+            <div #chartContainer class="chart-container"></div>
+            <div #floatingTooltip class="dynamic-chart-tooltip"></div>
+        </div>
+
+        <div class="chart-guide-external">
+            <h3>Beginner's Guide to the Chart</h3>
+
+            <div class="guide-section">
+                <h4>Understanding the Visuals</h4>
+                <div class="guide-grid">
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-body green"></div>
+                        </div>
+                        <div class="desc-col"><strong>Green Candle:</strong> The price went up. The bottom of the box is
+                            the start price, the top is the finish price.</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-body red"></div>
+                        </div>
+                        <div class="desc-col"><strong>Red Candle:</strong> The price went down. The top of the box is
+                            the start price, the bottom is the finish price.</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-volume-bar green"></div>
+                        </div>
+                        <div class="desc-col"><strong>Green Volume:</strong> More people were buying than selling during
+                            this time. Buying interest is strong.</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-volume-bar red"></div>
+                        </div>
+                        <div class="desc-col"><strong>Red Volume:</strong> More people were selling than buying. There
+                            is high selling pressure.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-section mt-3">
+                <h4>Chart Helpers & Axes</h4>
+                <div class="guide-grid">
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-axis-price">$</div>
+                        </div>
+                        <div class="desc-col"><strong>Price Axis (Right):</strong> Shows you exactly how many dollars
+                            one share costs at that level.</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-axis-time">📅</div>
+                        </div>
+                        <div class="desc-col"><strong>Time Axis (Bottom):</strong> Shows when the price movement
+                            happened (Date and Time).</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-line orange"></div>
+                        </div>
+                        <div class="desc-col"><strong>SMA (Orange):</strong> A smooth average line that helps you ignore
+                            chaotic jumps and see the real direction.</div>
+                    </div>
+                    <div class="guide-row">
+                        <div class="symbol-col">
+                            <div class="guide-band purple"></div>
+                        </div>
+                        <div class="desc-col"><strong>Bollinger Area:</strong> A visual 'highway'. If the price hits the
+                            top or bottom edges, it might turn back soon.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="bottom-panels">
             <div class="trading-panel">
                 <div class="panel-header advanced-header">
@@ -119,26 +209,20 @@
                             Trade {{searchedSymbol | uppercase}}
                             <span class="current-price-inline">${{ stockData.price | number:'1.2-2' }}</span>
                         </h3>
-                        <div class="balance-info">
+                        <div class="balance-info" data-tooltip="How much safe cash you have ready to spend on stocks.">
                             <span class="label">Balance:</span>
                             <span class="value">${{ userBalance | number:'1.2-2' }}</span>
                         </div>
                     </div>
 
-                    <div class="header-change-row">
-                        <span class="change-percent" 
-                              [class.profit]="stockData.changePercent >= 0" 
-                              [class.loss]="stockData.changePercent < 0">
-                            {{ stockData.changePercent >= 0 ? '+' : '' }}{{ stockData.changePercent | number:'1.2-2' }}%
-                        </span>
-                    </div>
-
                     <div class="header-quotes-row">
-                        <div class="quote-box bid">
+                        <div class="quote-box bid"
+                            data-tooltip="The highest price someone is willing to pay. If you SELL your shares, this is the money you get.">
                             <span class="q-label">BID:</span>
                             <span class="q-value">${{ stockData.bid | number:'1.2-2' }}</span>
                         </div>
-                        <div class="quote-box ask">
+                        <div class="quote-box ask"
+                            data-tooltip="The lowest price a seller will accept. If you want to BUY shares, this is what you have to pay.">
                             <span class="q-label">ASK:</span>
                             <span class="q-value">${{ stockData.ask | number:'1.2-2' }}</span>
                         </div>
@@ -146,20 +230,23 @@
                 </div>
 
                 <div class="trading-controls">
-                    <div class="input-group">
+                    <div class="input-group" data-tooltip="Enter the exact number of shares you want to buy or sell.">
                         <label for="quantity">Quantity:</label>
                         <input type="number" id="quantity" [(ngModel)]="tradeQuantity" min="1" step="1">
                     </div>
 
-                    <div class="order-summary">
+                    <div class="order-summary"
+                        data-tooltip="Roughly how much this trade will cost you (or pay you) in total.">
                         <span class="label">Estimated Total:</span>
                         <span class="value">${{ (tradeQuantity * stockData.ask) | number:'1.2-2' }}</span>
                     </div>
                 </div>
 
                 <div class="trading-buttons">
-                    <button class="btn-buy" (click)="buy()">BUY</button>
-                    <button class="btn-sell" (click)="sell()">SELL</button>
+                    <button class="btn-buy" (click)="buy()"
+                        data-tooltip="Click to instantly buy these shares using your cash balance.">BUY</button>
+                    <button class="btn-sell" (click)="sell()"
+                        data-tooltip="Click to instantly sell shares you already own and get cash back.">SELL</button>
                 </div>
 
                 @if(tradeMessage) {
@@ -175,95 +262,97 @@
                         <option value="Orders">Order History</option>
                         <option value="Position">Current Position</option>
                     </select>
-                    <h3 style="margin: 0;">{{searchedSymbol | uppercase}}</h3>
                 </div>
 
                 <div class="table-container">
                     @if (selectedBottomTab === 'Orders') {
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Side</th>
-                                    <th>Qty</th>
-                                    <th>Filled Qty</th>
-                                    <th>Fill Price</th>
-                                    <th>Status</th>
-                                    <th>Date & Time</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (order of symbolOrders; track order.id) {
-                                <tr>
-                                    <td>
-                                        <span class="side-badge" [class.buy]="order.side === 'Buy'"
-                                            [class.sell]="order.side === 'Sell'">
-                                            {{ order.side | uppercase }}
-                                        </span>
-                                    </td>
-                                    <td>{{ order.quantity }}</td>
-                                    <td>{{ order.filledQuantity }}</td>
-                                    <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
-                                    <td>
-                                            <span class="status-text" 
-                                                  [class.filled]="order.status === 'Filled'"
-                                                  [class.pending]="order.status === 'Pending'"
-                                                  [class.partiallyfilled]="order.status === 'PartiallyFilled'">
-                                                {{ order.status }}
-                                            </span>
-                                        </td>
-                                    <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
-                                    <td>
-                                        @if (order.status === 'Pending' || order.status === 'PartiallyFilled') {
-                                            <button class="btn-cancel" (click)="cancelOrder(order.id)">Cancel</button>
-                                        }
-                                    </td>
-                                </tr>
-                                } @empty {
-                                <tr>
-                                    <td colspan="7" class="no-data">There aren't orders for this stock.</td>
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th data-tooltip="Did you try to buy or sell shares?">Side</th>
+                                <th data-tooltip="The total amount of shares you requested.">Qty</th>
+                                <th data-tooltip="How many shares the market has actually traded for you so far.">Filled
+                                    Qty</th>
+                                <th data-tooltip="The actual price you paid or received for each share.">Fill Price</th>
+                                <th data-tooltip="Is the order finished (Filled), waiting (Pending), or half-done?">
+                                    Status</th>
+                                <th data-tooltip="The exact date and time you placed this request.">Date & Time</th>
+                                <th
+                                    data-tooltip="Cancel active orders. You cannot cancel orders that are already finished.">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (order of symbolOrders; track order.id) {
+                            <tr>
+                                <td><span class="side-badge" [class.buy]="order.side === 'Buy'"
+                                        [class.sell]="order.side === 'Sell'">{{ order.side | uppercase }}</span></td>
+                                <td>{{ order.quantity }}</td>
+                                <td>{{ order.filledQuantity }}</td>
+                                <td>${{ order.averageFillPrice | number:'1.2-2' }}</td>
+                                <td><span class="status-text" [class.filled]="order.status === 'Filled'"
+                                        [class.pending]="order.status === 'Pending'"
+                                        [class.partiallyfilled]="order.status === 'PartiallyFilled'">{{ order.status
+                                        }}</span></td>
+                                <td class="date-col">{{ order.createdAt | date:'MMM dd, HH:mm:ss' }}</td>
+                                <td>
+                                    @if (order.status === 'Pending' || order.status === 'PartiallyFilled') {
+                                    <button class="btn-cancel" (click)="cancelOrder(order.id)">Cancel</button>
+                                    } @else {
+                                    <span style="color: #94a3b8; font-weight: 600; padding-left: 1rem;">-</span>
+                                    }
+                                </td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="7" class="no-data">There aren't orders for this stock.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                     } @else {
-                        <table class="orders-table position-table">
-                            <thead>
-                                <tr>
-                                    <th>Shares</th>
-                                    <th>Avg Cost</th>
-                                    <th>Current</th>
-                                    <th>Market Value</th>
-                                    <th>Total P/L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (currentPosition && stockData.price) {
-                                <tr>
-                                    <td style="font-weight: 600;">{{ currentPosition.quantity }}</td>
-                                    <td>${{ currentPosition.averagePrice | number:'1.2-2' }}</td>
-                                    <td>${{ stockData.price | number:'1.2-2' }}</td>
-                                    <td style="font-weight: 600;">${{ currentPositionValue | number:'1.2-2' }}</td>
-                                    <td class="pnl-cell" 
-                                        [class.profit]="currentPositionPnL >= 0" 
-                                        [class.loss]="currentPositionPnL < 0">
-                                        {{ currentPositionPnL >= 0 ? '+' : '' }}${{ currentPositionPnL | number:'1.2-2' }} 
-                                        <br>
-                                        <small>({{ currentPositionPnLPercent >= 0 ? '+' : '' }}{{ currentPositionPnLPercent | number:'1.2-2' }}%)</small>
-                                    </td>
-                                </tr>
-                                } @else {
-                                <tr>
-                                    <td colspan="5" class="no-data">You don't have an open position for {{searchedSymbol | uppercase}}.</td>
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
+                    <table class="orders-table position-table">
+                        <thead>
+                            <tr>
+                                <th data-tooltip="The total number of shares of this company you own right now.">Shares
+                                </th>
+                                <th data-tooltip="The average price you paid for each share you bought.">Avg Cost</th>
+                                <th data-tooltip="What one single share is worth right now in the real market.">Current
+                                </th>
+                                <th data-tooltip="The total cash value of your shares if you sold them now.">Market
+                                    Value</th>
+                                <th
+                                    data-tooltip="Your total profit (green) or loss (red) since you first bought these shares.">
+                                    Total P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (currentPosition && stockData.price) {
+                            <tr>
+                                <td style="font-weight: 600;">{{ currentPosition.quantity }}</td>
+                                <td>${{ currentPosition.averagePrice | number:'1.2-2' }}</td>
+                                <td>${{ stockData.price | number:'1.2-2' }}</td>
+                                <td style="font-weight: 600;">${{ currentPositionValue | number:'1.2-2' }}</td>
+                                <td class="pnl-cell" [class.profit]="currentPositionPnL >= 0"
+                                    [class.loss]="currentPositionPnL < 0">
+                                    {{ currentPositionPnL >= 0 ? '+' : '' }}${{ currentPositionPnL | number:'1.2-2' }}
+                                    <br>
+                                    <small>({{ currentPositionPnLPercent >= 0 ? '+' : '' }}{{ currentPositionPnLPercent
+                                        | number:'1.2-2' }}%)</small>
+                                </td>
+                            </tr>
+                            } @else {
+                            <tr>
+                                <td colspan="5" class="no-data">You don't have an open position for {{searchedSymbol |
+                                    uppercase}}.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                     }
                 </div>
             </div>
         </div>
     </div>
-
     }
 </div>

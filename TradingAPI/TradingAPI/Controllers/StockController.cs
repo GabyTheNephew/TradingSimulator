@@ -59,7 +59,6 @@ namespace TradingAPI.Controllers
         [HttpGet("search/{symbol}")]
         public async Task<ActionResult<StockQuoteDto>> SearchStock(string symbol)
         {
-            // Aici e cheia! Trebuie să apeleze GetStockSnapshotAsync
             var stockData = await _alpacaService.GetStockSnapshotAsync(symbol);
 
             if (stockData == null) return NotFound();

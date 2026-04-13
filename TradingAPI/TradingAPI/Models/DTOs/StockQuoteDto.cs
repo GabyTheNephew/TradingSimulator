@@ -3,12 +3,11 @@
     public class StockQuoteDto
     {
         public string Symbol { get; set; } = string.Empty;
-        public decimal Price { get; set; } // Prețul curent (Latest Trade)
-        public decimal Bid { get; set; }   // Prețul de vânzare
-        public decimal Ask { get; set; }   // Prețul de cumpărare
-        public decimal ChangePercent { get; set; } // Procentul verde/roșu
+        public decimal Price { get; set; }
+        public decimal Bid { get; set; }
+        public decimal Ask { get; set; }
+        public decimal ChangePercent { get; set; }
 
-        // Date extra pentru statistici:
         public decimal Open { get; set; }
         public decimal High { get; set; }
         public decimal Low { get; set; }

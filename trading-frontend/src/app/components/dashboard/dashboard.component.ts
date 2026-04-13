@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private startPolling(symbol: string): void {
     this.stopPolling(); // Oprim orice ceas vechi ca să nu se dubleze
-    
+
     // 5000 milisecunde = 5 secunde
     this.pollingSubscription = interval(5000).subscribe(() => {
       console.log(`[Polling] Fetching live data for ${symbol} at ${new Date().toLocaleTimeString()}`);
@@ -144,13 +144,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public get currentPositionPnLPercent(): number {
     const pos = this.currentPosition;
     if (!pos || !this.stockData?.price || pos.averagePrice === 0) return 0;
-    
+
     const totalCost = pos.quantity * pos.averagePrice;
-    
+
     // Împărțim Profitul Total la Costul Total Investit
     return (this.currentPositionPnL / totalCost) * 100;
   }
-
+  public getChartTypeDescription(): string {
+    switch (this.selectedChartType) {
+      case ChartType.Candlestick:
+        return "Shows the price journey using boxes. It reveals the battle between buyers and sellers.";
+      case ChartType.Line:
+        return "Connects the closing prices. It's the simplest way to see the overall price path.";
+      case ChartType.Area:
+        return "Similar to a Line chart, but colored underneath to help you see the volume of price moves.";
+      case ChartType.Baseline:
+        return "Shows if the price is currently above (green) or below (red) a starting point.";
+      default:
+        return "Visual representation of price data.";
+    }
+  }
   public onSearch(): void {
     if (!this.searchQuery) return;
 

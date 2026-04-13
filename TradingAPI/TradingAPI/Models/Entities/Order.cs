@@ -18,20 +18,20 @@ namespace TradingAPI.Models.Entities
         [Required]
         public string Symbol { get; set; } = string.Empty;
 
-        public OrderSide Side { get; set; } // Buy sau Sell
+        public OrderSide Side { get; set; }
 
         [Column(TypeName = "decimal(18,4)")]
-        public decimal Quantity { get; set; } // Cât ai cerut tu
+        public decimal Quantity { get; set; }
 
         [Column(TypeName = "decimal(18,4)")]
-        public decimal FilledQuantity { get; set; } // Cât ți-a dat piața efectiv
+        public decimal FilledQuantity { get; set; }
 
         [Column(TypeName = "decimal(18,4)")]
-        public decimal AverageFillPrice { get; set; } // Prețul mediu la care ți le-a dat
+        public decimal AverageFillPrice { get; set; }
 
         public OrderStatus Status { get; set; }
 
-        public DateTime CreatedAt { get; set; } // Când ai apăsat butonul
-        public DateTime UpdatedAt { get; set; } // Când s-a executat/modificat ultima oară
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

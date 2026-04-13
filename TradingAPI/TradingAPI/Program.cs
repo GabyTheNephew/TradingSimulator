@@ -43,11 +43,10 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false, // Pune pe true doar dacă ai setat un Issuer specific
-        ValidateAudience = false, // Pune pe true doar dacă ai setat o Audiență
+        ValidateIssuer = false,
+        ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        // ATENȚIE: Aici trebuie să citești cheia secretă exact cum o citești și în AuthService când GENEREZI token-ul!
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });

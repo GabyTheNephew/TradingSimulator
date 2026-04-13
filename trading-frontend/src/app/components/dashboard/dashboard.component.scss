@@ -24,7 +24,6 @@
       gap: 1rem;
       align-items: center;
 
-      // NOU: Stilul pentru butonul de Portfolio
       .btn-portfolio {
         padding: 0.5rem 1.5rem;
         background-color: #f8fafc;
@@ -42,7 +41,6 @@
         }
       }
 
-      // Butonul tău existent de Logout (îl lași exact cum era)
       .btn-logout {
         padding: 0.5rem 1.5rem;
         background-color: #ef4444;
@@ -62,15 +60,19 @@
 
   .search-section {
     display: flex;
-    gap: 1rem;
     margin-bottom: 2rem;
+
+    .search-wrapper {
+      display: flex;
+      gap: 1rem;
+      width: max-content;
+    }
 
     input {
       padding: 0.5rem 1rem;
       border: 1px solid #cbd5e1;
       border-radius: 0.25rem;
-      flex: 1;
-      max-width: 300px;
+      width: 300px;
       font-size: 1rem;
       outline: none;
 
@@ -95,11 +97,26 @@
     }
   }
 
-  .error-message {
+  .error-msg {
     color: #ef5350;
     font-weight: 600;
     margin-bottom: 1rem;
   }
+
+  .selected-type-badge {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.3rem;
+    font-weight: 500;
+    cursor: help;
+
+    span {
+      color: #3b82f6;
+      font-weight: 700;
+    }
+  }
+
+  // <- Aici lipsea paranteza care a stricat designul!
 
   .stock-card {
     background: white;
@@ -109,7 +126,7 @@
 
     .card-header {
       display: flex;
-      flex-direction: column; // Așezăm rândurile unul sub altul
+      flex-direction: column;
       gap: 1.5rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid #e2e8f0;
@@ -157,7 +174,8 @@
 
           .control-group {
             display: flex;
-            align-items: center;
+            flex-direction: column; // Pentru a alinia eticheta badge-ului frumos sub select
+            align-items: flex-start;
             gap: 0.5rem;
 
             label {
@@ -171,6 +189,49 @@
               border: 1px solid #cbd5e1;
               border-radius: 4px;
               outline: none;
+            }
+          }
+
+          .checkbox-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-top: 1.2rem; // Aliniază cu restul controalelor
+
+            div {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
+
+            label {
+              cursor: pointer;
+              color: #334155;
+            }
+          }
+
+          .btn-recenter {
+            display: flex;
+            align-items: center;
+            margin-top: 1.2rem; // Aliniază cu restul controalelor
+            gap: 0.3rem;
+            padding: 0.35rem 0.8rem;
+            background-color: #f8fafc;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background-color: #e2e8f0;
+              color: #0f172a;
+              border-color: #94a3b8;
+            }
+
+            &:active {
+              transform: scale(0.97);
             }
           }
         }
@@ -200,438 +261,635 @@
       }
     }
 
-    .chart-container {
+    .chart-wrapper {
+      position: relative;
       width: 100%;
-      height: 35rem;
-      min-height: 50vh;
       margin-top: 2rem;
+
+      .chart-container {
+        width: 100%;
+        height: 35rem;
+        min-height: 50vh;
+      }
+
+      .dynamic-chart-tooltip {
+        width: 130px;
+        position: absolute;
+        display: none;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 0.85rem;
+        color: #ffffff;
+        background-color: rgba(15, 23, 42, 0.95);
+        text-align: left;
+        z-index: 1000;
+        pointer-events: none;
+        border-radius: 6px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+        strong {
+          color: #94a3b8;
+          display: inline-block;
+          width: 25px;
+        }
+
+        .vol-data {
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+      }
     }
-  }
 
-  .btn-recenter {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.35rem 0.8rem;
-    background-color: #f8fafc;
-    color: #475569;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      border-color: #94a3b8;
-    }
-
-    &:active {
-      transform: scale(0.97);
-    }
-  }
-
-  .bottom-panels {
-    display: grid;
-    grid-template-columns: 1fr 1fr; // Două coloane egale (50/50)
-    gap: 2rem;
-    margin-top: 1rem;
-
-    .trading-panel,
-    .position-panel {
-      padding: 1.5rem;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
+    .chart-guide-external {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
       border-radius: 0.5rem;
-      min-height: 28rem; // Înălțimea panourilor
+      padding: 1.5rem;
+      margin-top: 2rem;
 
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+      h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+        color: #1e293b;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+      }
 
-    // --- STILURI SPECIFICE: TRADING PANEL ---
-    .trading-panel {
-      .panel-header.advanced-header {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #cbd5e1;
-        justify-content: flex-start;
-        align-items: stretch;
-
-        .header-top-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          h3 {
-            margin: 0;
-            color: #1e293b;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-
-            .current-price-inline {
-              font-weight: 700;
-              color: #0f172a;
-              font-size: 1.25rem;
-            }
-          }
-
-          .balance-info {
-            display: flex;
-            gap: 0.4rem;
-            align-items: baseline;
-
-            .label {
-              color: #64748b;
-              font-size: 0.85rem;
-              font-weight: 600;
-            }
-
-            .value {
-              color: #0f172a;
-              font-size: 1.1rem;
-              font-weight: 700;
-            }
-          }
+      .guide-section {
+        h4 {
+          margin: 0 0 1rem 0;
+          color: #475569;
+          font-size: 0.95rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
-        .header-change-row {
-          margin-top: -0.2rem;
-
-          .change-percent {
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-
-            &.profit {
-              color: #26a69a;
-              background-color: #e6f6f4;
-            }
-
-            &.loss {
-              color: #ef5350;
-              background-color: #fdeadf;
-            }
-          }
-        }
-
-        .header-quotes-row {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 0.5rem;
-          background-color: #f1f5f9;
-          padding: 0.5rem 0.75rem;
-          border-radius: 4px;
-
-          .quote-box {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-
-            .q-label {
-              font-size: 0.8rem;
-              font-weight: 600;
-              color: #64748b;
-            }
-
-            .q-value {
-              font-size: 1.1rem;
-              font-weight: 700;
-              color: #0f172a;
-            }
-
-            &.bid .q-value {
-              color: #ef5350;
-            }
-
-            &.ask .q-value {
-              color: #26a69a;
-            }
-          }
+        &.mt-3 {
+          margin-top: 1.5rem;
+          border-top: 1px dashed #cbd5e1;
+          padding-top: 1.5rem;
         }
       }
 
-      .trading-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
+      .guide-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
 
-        .input-group {
+        .guide-row {
           display: flex;
           align-items: center;
           gap: 1rem;
 
-          label {
-            font-weight: 600;
-            color: #334155;
+          .symbol-col {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+
+            .guide-body {
+              width: 16px;
+              height: 24px;
+              border-radius: 2px;
+
+              &.green {
+                background: #26a69a;
+              }
+
+              &.red {
+                background: #ef5350;
+              }
+            }
+
+            .guide-volume-bar {
+              width: 12px;
+              height: 28px;
+              border-radius: 2px;
+
+              &.green {
+                background: rgba(38, 166, 154, 0.5);
+              }
+
+              &.red {
+                background: rgba(239, 83, 80, 0.5);
+              }
+            }
+
+            .guide-axis-price,
+            .guide-axis-time {
+              font-weight: 700;
+              color: #64748b;
+              font-size: 1.1rem;
+            }
+
+            .guide-line {
+              width: 30px;
+              height: 3px;
+
+              &.orange {
+                background: #ff9800;
+              }
+            }
+
+            .guide-band {
+              width: 30px;
+              height: 20px;
+              background: rgba(156, 39, 176, 0.15);
+              border-top: 2px dashed rgba(156, 39, 176, 0.6);
+              border-bottom: 2px dashed rgba(156, 39, 176, 0.6);
+            }
           }
 
-          input {
-            width: 100px;
-            padding: 0.5rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.25rem;
-            font-size: 1.1rem;
-            text-align: center;
-            outline: none;
+          .desc-col {
+            font-size: 0.9rem;
+            color: #475569;
+            line-height: 1.4;
+
+            strong {
+              color: #0f172a;
+              display: block;
+              margin-bottom: 0.1rem;
+            }
           }
-
-          input:focus {
-            border-color: #3b82f6;
-          }
-        }
-
-        .order-summary {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-
-          .label {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 600;
-          }
-
-          .value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-          }
-        }
-      }
-
-      .trading-buttons {
-        display: flex;
-        gap: 1rem;
-
-        button {
-          flex: 1;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: white;
-          border: none;
-          border-radius: 0.25rem;
-          cursor: pointer;
-          transition: transform 0.1s, opacity 0.2s;
-        }
-
-        button:active {
-          transform: scale(0.98);
-        }
-
-        button:hover {
-          opacity: 0.9;
-        }
-
-        .btn-buy {
-          background-color: #26a69a;
-        }
-
-        .btn-sell {
-          background-color: #ef5350;
-        }
-      }
-
-      .trade-alert {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        border-radius: 0.25rem;
-        font-weight: 600;
-        text-align: center;
-
-        &.success {
-          background-color: #d1fae5;
-          color: #065f46;
-          border: 1px solid #10b981;
-        }
-
-        &.error {
-          background-color: #fee2e2;
-          color: #991b1b;
-          border: 1px solid #ef4444;
         }
       }
     }
 
-    // --- STILURI SPECIFICE: TABELUL DE ORDINE ---
-    .position-panel {
-      .panel-header {
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #cbd5e1;
+    .bottom-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem; // Adăugat puțin spațiu între ghid și panouri
 
-        h3 {
-          margin: 0;
-          color: #1e293b;
-          font-size: 1.25rem;
-        }
-      }
-
-      .table-container {
-        overflow-y: auto;
-        max-height: 22rem;
-        flex: 1;
+      .trading-panel,
+      .position-panel {
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        min-height: 28rem;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: space-between;
       }
 
-      .orders-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.9rem;
+      .trading-panel {
+        .panel-header.advanced-header {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #cbd5e1;
+          justify-content: flex-start;
+          align-items: stretch;
 
+          .header-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
-        height: max-content;
-        margin-bottom: auto;
-        th {
-          position: sticky;
-          top: 0;
-          background-color: #f8fafc;
-          padding: 0.75rem 0.5rem;
-          color: #64748b;
-          font-weight: 600;
-          border-bottom: 2px solid #e2e8f0;
-          z-index: 1;
-        }
+            h3 {
+              margin: 0;
+              color: #1e293b;
+              font-size: 1.2rem;
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
 
-        td {
-          padding: 0.75rem 0.5rem;
-          border-bottom: 1px solid #e2e8f0;
-          color: #334155;
-          vertical-align: middle;
-        }
+              .current-price-inline {
+                font-weight: 700;
+                color: #0f172a;
+                font-size: 1.25rem;
+              }
+            }
 
-        tr:hover td {
-          background-color: #f1f5f9;
-        }
+            .balance-info {
+              display: flex;
+              gap: 0.4rem;
+              align-items: baseline;
 
-        .side-badge {
-          padding: 0.2rem 0.5rem;
-          border-radius: 4px;
-          font-weight: 700;
-          font-size: 0.8rem;
+              .label {
+                color: #64748b;
+                font-size: 0.85rem;
+                font-weight: 600;
+              }
 
-          &.buy {
-            background-color: #d1fae5;
-            color: #059669;
+              .value {
+                color: #0f172a;
+                font-size: 1.1rem;
+                font-weight: 700;
+              }
+            }
           }
 
-          &.sell {
-            background-color: #fee2e2;
-            color: #dc2626;
+          .header-change-row {
+            margin-top: -0.2rem;
+
+            .change-percent {
+              font-size: 0.85rem;
+              font-weight: 700;
+              padding: 0.1rem 0.4rem;
+              border-radius: 4px;
+
+              &.profit {
+                color: #26a69a;
+                background-color: #e6f6f4;
+              }
+
+              &.loss {
+                color: #ef5350;
+                background-color: #fdeadf;
+              }
+            }
+          }
+
+          .header-quotes-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            background-color: #f1f5f9;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+
+            .quote-box {
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+
+              .q-label {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #64748b;
+              }
+
+              .q-value {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #0f172a;
+              }
+
+              &.bid .q-value {
+                color: #ef5350;
+              }
+
+              &.ask .q-value {
+                color: #26a69a;
+              }
+            }
           }
         }
 
-        .status-text {
-          font-weight: 600;
-          padding: 0.2rem 0.5rem;
-          border-radius: 4px;
-          font-size: 0.8rem;
+        .trading-controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
 
-          // Stiluri noi pentru engine-ul realist
-          &.filled {
-            color: #059669;
-            background-color: #d1fae5;
+          .input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            label {
+              font-weight: 600;
+              color: #334155;
+            }
+
+            input {
+              width: 100px;
+              padding: 0.5rem;
+              border: 1px solid #cbd5e1;
+              border-radius: 0.25rem;
+              font-size: 1.1rem;
+              text-align: center;
+              outline: none;
+
+              &:focus {
+                border-color: #3b82f6;
+              }
+            }
           }
 
-          // Verde pentru succes complet
-          &.pending {
-            color: #d97706;
-            background-color: #fef3c7;
+          .order-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+
+            .label {
+              font-size: 0.8rem;
+              color: #64748b;
+              font-weight: 600;
+            }
+
+            .value {
+              font-size: 1.25rem;
+              font-weight: 700;
+              color: #1e293b;
+            }
           }
-
-          // Portocaliu pentru în așteptare
-          &.partiallyfilled {
-            color: #2563eb;
-            background-color: #dbeafe;
-          }
-
-          // Albastru pentru parțial
         }
 
-        .date-col {
-          color: #64748b;
-          font-size: 0.85rem;
-        }
+        .trading-buttons {
+          display: flex;
+          gap: 1rem;
 
-        .no-data {
-          text-align: center;
-          padding: 2rem;
-          color: #94a3b8;
-          font-style: italic;
-        }
-
-        .btn-cancel {
-          background-color: transparent;
-          color: #ef4444;
-          border: 1px solid #ef4444;
-          padding: 0.2rem 0.5rem;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 0.75rem;
-          font-weight: 600;
-          transition: all 0.2s;
-
-          &:hover {
-            background-color: #ef4444;
+          button {
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+
+            &:active {
+              transform: scale(0.98);
+            }
+
+            &:hover {
+              opacity: 0.9;
+            }
+          }
+
+          .btn-buy {
+            background-color: #26a69a;
+          }
+
+          .btn-sell {
+            background-color: #ef5350;
+          }
+        }
+
+        .trade-alert {
+          margin-top: 1.5rem;
+          padding: 1rem;
+          border-radius: 0.25rem;
+          font-weight: 600;
+          text-align: center;
+
+          &.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+          }
+
+          &.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
           }
         }
       }
 
-      .tab-select {
-        padding: 0.4rem 0.8rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        font-weight: 600;
-        color: #1e293b;
-        background-color: #f8fafc;
-        cursor: pointer;
-        font-size: 0.95rem;
-        outline: none;
-        transition: border-color 0.2s;
+      .position-panel {
+        .panel-header {
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #cbd5e1;
 
-        &:focus {
-          border-color: #2563eb;
+          h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.25rem;
+          }
         }
-      }
 
-      // Stil specific pentru tabelul de poziții
-      .position-table {
-        .pnl-cell {
-          font-weight: 700;
-          line-height: 1.2;
+        .table-container {
+          overflow-y: auto;
+          max-height: 22rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+        }
 
-          &.profit {
-            color: #059669;
+        .orders-table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.9rem;
+          height: max-content;
+          margin-bottom: auto;
+
+          th {
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
+            padding: 0.75rem 0.5rem;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            z-index: 1;
           }
 
-          // Verde
-          &.loss {
-            color: #dc2626;
+          td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: middle;
           }
 
-          // Roșu
+          tr:hover td {
+            background-color: #f1f5f9;
+          }
 
-          small {
+          .side-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+
+            &.buy {
+              background-color: #d1fae5;
+              color: #059669;
+            }
+
+            &.sell {
+              background-color: #fee2e2;
+              color: #dc2626;
+            }
+          }
+
+          .status-text {
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+
+            &.filled {
+              color: #059669;
+              background-color: #d1fae5;
+            }
+
+            &.pending {
+              color: #d97706;
+              background-color: #fef3c7;
+            }
+
+            &.partiallyfilled {
+              color: #2563eb;
+              background-color: #dbeafe;
+            }
+          }
+
+          .date-col {
+            color: #64748b;
+            font-size: 0.85rem;
+          }
+
+          .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-style: italic;
+          }
+
+          .btn-cancel {
+            background-color: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
             font-size: 0.75rem;
-            opacity: 0.9;
+            font-weight: 600;
+            transition: all 0.2s;
+
+            &:hover {
+              background-color: #ef4444;
+              color: white;
+            }
+          }
+        }
+
+        .tab-select {
+          padding: 0.4rem 0.8rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-weight: 600;
+          color: #1e293b;
+          background-color: #f8fafc;
+          cursor: pointer;
+          font-size: 0.95rem;
+          outline: none;
+          transition: border-color 0.2s;
+
+          &:focus {
+            border-color: #2563eb;
+          }
+        }
+
+        .position-table {
+          .pnl-cell {
+            font-weight: 700;
+            line-height: 1.2;
+
+            &.profit {
+              color: #059669;
+            }
+
+            &.loss {
+              color: #dc2626;
+            }
+
+            small {
+              font-size: 0.75rem;
+              opacity: 0.9;
+            }
           }
         }
       }
     }
+  }
+
+  [data-tooltip] {
+    position: relative;
+    cursor: help;
+  }
+
+  [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: max-content;
+    max-width: 280px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+  }
+
+  [data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.95);
+    margin-bottom: -0.2rem;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  th[data-tooltip]:hover::after {
+    bottom: auto;
+    top: 100%;
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+  }
+
+  th[data-tooltip]:hover::before {
+    bottom: auto;
+    top: 100%;
+    margin-bottom: 0;
+    margin-top: -0.1rem;
+    border-top-color: transparent;
+    border-bottom-color: rgba(15, 23, 42, 0.95);
+  }
+
+  th:first-child[data-tooltip]:hover::after {
+    left: 0;
+    transform: translateX(0);
+  }
+
+  th:first-child[data-tooltip]:hover::before {
+    left: 1rem;
+    transform: translateX(0);
+  }
+
+  th:last-child[data-tooltip]:hover::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+  }
+
+  th:last-child[data-tooltip]:hover::before {
+    left: auto;
+    right: 1rem;
+    transform: translateX(0);
+    border-top-color: transparent;
+    border-bottom-color: rgba(15, 23, 42, 0.95);
   }
 }

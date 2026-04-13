@@ -21,11 +21,9 @@ namespace TradingAPI.Controllers
         [HttpPost("buy")]
         public async Task<IActionResult> Buy([FromBody] TradeRequestDto request)
         {
-            // Extragem ID-ul userului care a făcut cererea
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            // Delegăm logica către serviciu
             var result = await _tradingService.BuyAsync(userId, request);
 
             if (!result.Success)

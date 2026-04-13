@@ -47,19 +47,19 @@ namespace TradingAPI.Services
                 switch (timeframe)
                 {
                     case ChartTimeframe.OneMonth:
-                        from = into.AddYears(-10); // 10 ani pentru lumânări lunare
+                        from = into.AddYears(-10);
                         break;
                     case ChartTimeframe.OneDay:
-                        from = into.AddYears(-3);  // 3 ani pentru lumânări zilnice
+                        from = into.AddYears(-3);
                         break;
                     case ChartTimeframe.OneHour:
-                        from = into.AddMonths(-6); // 6 luni de date orare
+                        from = into.AddMonths(-6);
                         break;
                     case ChartTimeframe.ThirtyMinutes:
-                        from = into.AddMonths(-3); // 3 luni
+                        from = into.AddMonths(-3);
                         break;
                     case ChartTimeframe.FifteenMinutes:
-                        from = into.AddMonths(-1); // 1 lună (mai mult decât suficient pt 15 min)
+                        from = into.AddMonths(-1);
                         break;
                     default:
                         from = into.AddYears(-1);
@@ -105,7 +105,6 @@ namespace TradingAPI.Services
         {
             try
             {
-                // AM CORECTAT AICI: Folosim LatestMarketDataRequest, nu SnapshotDataRequest
                 var snapshot = await _dataClient.GetSnapshotAsync(new LatestMarketDataRequest(symbol));
 
                 if (snapshot == null) return null;
@@ -116,9 +115,7 @@ namespace TradingAPI.Services
                 var prevClose = snapshot.PreviousDailyBar?.Close ?? 1m;
 
                 var currentPrice = snapshot.Quote?.AskPrice ?? snapshot.Trade?.Price ?? 0m;
-                //var prevClose = snapshot.PreviousDailyBar?.Close ?? 1m; // Evităm împărțirea la 0
 
-                // Calculăm procentajul de schimbare față de ziua precedentă
                 var changePercent = ((tradePrice - prevClose) / prevClose) * 100m;
 
                 return new StockQuoteDto
