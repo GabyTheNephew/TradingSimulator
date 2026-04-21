@@ -91,19 +91,19 @@
                     <div class="control-group">
                         <label>Indicators:</label>
                         <div class="checkbox-wrapper">
-                            <div data-tooltip="Turn on the SMA line. It smooths out the price jumps so you can see the general trend easier."
+                            <div data-tooltip="Simple Moving Average (SMA): A smooth line that calculates the average price over the last 20 periods. It helps you ignore short-term price jumps and see the real market trend."
                                 (click)="goToTutorial('sma-ema')">
                                 <input type="checkbox" id="smaCheck" [(ngModel)]="showSMA"
                                     (change)="onChartSettingsChange()" (click)="$event.stopPropagation()">
                                 <label for="smaCheck" (click)="$event.stopPropagation()">SMA</label>
                             </div>
-                            <div data-tooltip="Turn on the EMA line. Like SMA, but reacts faster to recent news."
+                            <div data-tooltip="Exponential Moving Average (EMA): Similar to SMA, but reacts much faster to recent price changes. It is used to detect new trends or price reversals more quickly."
                                 (click)="goToTutorial('sma-ema')">
                                 <input type="checkbox" id="emaCheck" [(ngModel)]="showEMA"
                                     (change)="onChartSettingsChange()" (click)="$event.stopPropagation()">
                                 <label for="emaCheck" (click)="$event.stopPropagation()">EMA</label>
                             </div>
-                            <div data-tooltip="Turn on Bollinger Bands. A visual 'highway' for the price. If price hits the top, it might drop soon."
+                            <div data-tooltip="Bollinger Bands: A visual 'highway' for price movement. It consists of a middle line and two outer bands. If price hits the edges, it might be over-extended and turn back soon."
                                 (click)="goToTutorial('bollinger')">
                                 <input type="checkbox" id="bbCheck" [(ngModel)]="showBollinger"
                                     (change)="onChartSettingsChange()" (click)="$event.stopPropagation()">
@@ -147,6 +147,16 @@
 
         <div class="chart-guide-external">
             <h3>Beginner's Guide to the Chart</h3>
+
+            <div class="guide-section mb-4">
+                <h4>What is this Chart?</h4>
+                <p class="guide-intro-text">
+                    This chart is a visual map of a stock's price over time. It helps you see not just where the price
+                    is now, but where it has been. By looking at trends and patterns, you can make better decisions
+                    about when to buy or sell. The bottom axis shows <strong>Time</strong>, and the right axis shows the
+                    <strong>Price</strong> in dollars.
+                </p>
+            </div>
 
             <div class="guide-section">
                 <h4>Understanding the Visuals</h4>
@@ -289,7 +299,7 @@
                     <table class="orders-table">
                         <thead>
                             <tr>
-                                <th data-tooltip="Did you try to buy or sell shares?"
+                                <th data-tooltip="The action taken: 'Buy' to add shares to your portfolio, or 'Sell' to remove them and get cash."
                                     (click)="goToTutorial('table-orders')">Side</th>
                                 <th data-tooltip="The total amount of shares you requested."
                                     (click)="goToTutorial('table-orders')">Qty</th>
