@@ -102,6 +102,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Asigură-te că serviciul tău are metoda getAIAnalysis(ticker)
     this.analysisService.getAIAnalysis(this.searchedSymbol).subscribe({
       next: (response: AnalysisResponse) => {
+        console.log('Date primite de la backend C#:', response);
         this.analysisResult = response;
         this.isAnalyzing = false;
         this.cdr.detectChanges(); // Ne asigurăm că Angular actualizează interfața

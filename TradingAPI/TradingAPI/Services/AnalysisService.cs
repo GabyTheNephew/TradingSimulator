@@ -19,38 +19,39 @@ namespace TradingAPI.Services
 
         public async Task<AnalysisResponseDto?> GenerateAnalysisAsync(string userId, string ticker)
         {
-            var user = await _context.Users.FindAsync(userId);
+            // 1. Luăm datele INIȚIALE (fără să blocăm modificările viitoare)
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return null;
 
-            // 1. Obținem contextul portofoliului folosind TradingService existent
             var portfolio = await _tradingService.GetPortfolioAsync(userId);
             string portfolioContext = BuildPortfolioContextString(portfolio);
-
-            // 2. Determinăm data de start pentru știri (default 7 zile dacă e prima rulare)
             var lastUpdate = user.LastAnalysisDate ?? DateTime.UtcNow.AddDays(-7);
 
             var request = new AnalysisRequestDto
             {
                 Ticker = ticker,
                 PortfolioContext = portfolioContext,
-                LastUpdate = lastUpdate.ToString("O") // Format ISO 8601
+                LastUpdate = lastUpdate.ToString("O")
             };
 
-            // 3. Apelăm Microserviciul Python (presupunem că rulează pe portul 8000)
+            // 2. Așteptăm zeci de secunde după AI (AICI se putea întâmpla conflictul înainte)
             var response = await _httpClient.PostAsJsonAsync("http://localhost:8000/analyze", request);
-
             if (!response.IsSuccessStatusCode)
                 throw new Exception("AI Microservice is unreachable or returned an error.");
 
             var result = await response.Content.ReadFromJsonAsync<AnalysisResponseDto>();
 
-            // 4. Actualizăm data ultimei analize în baza de date
-            user.LastAnalysisDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            // 3. ACTUALIZĂM DOAR DATA, FĂRĂ SĂ ATINGEM RESTUL CÂMPURILOR
+            // Re-extragem user-ul fresh din DB, fix inainte sa salvam, ca sa evitam conflictele cu Worker-ul
+            var userToUpdate = await _context.Users.FindAsync(userId);
+            if (userToUpdate != null)
+            {
+                userToUpdate.LastAnalysisDate = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
 
             return result;
         }
-
         private string BuildPortfolioContextString(PortfolioResponseDto? portfolio)
         {
             if (portfolio == null) return "Account Balance: $0 | No positions.";

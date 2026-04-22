@@ -15,7 +15,7 @@ async def analyze_stock_endpoint(request: AnalysisRequest):
     
     try:
         # Apeleaza logica de business din Service
-        result = generate_stock_analysis(ticker, request.portfolio_context)
+        result = generate_stock_analysis(ticker, request.portfolio_context, request.last_update)
         
         # Formateaza si returneaza raspunsul
         return AnalysisResponse(

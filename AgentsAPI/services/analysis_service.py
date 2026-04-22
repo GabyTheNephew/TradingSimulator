@@ -10,7 +10,7 @@ from services.agent_service import ai_pipeline, vector_db
 ALPACA_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_SECRET = os.getenv("ALPACA_SECRET_KEY")
 
-def generate_stock_analysis(ticker: str, portfolio_context: str) -> dict:
+def generate_stock_analysis(ticker: str, portfolio_context: str, last_update: str) -> dict:
     """
     Logica centrala de business (Orchestratorul).
     Extrage date tehnice, stirile, istoricul din RAG si apeleaza agentii.
@@ -72,6 +72,11 @@ def generate_stock_analysis(ticker: str, portfolio_context: str) -> dict:
     # 5. Executarea Magiei AI (LangGraph)
     result = ai_pipeline.invoke(initial_state)
     
+    print("\n--- TEST AI OUTPUT ---")
+    print(f"Lungime text generat: {len(result.get('final_report', ''))}")
+    print(f"O bucatica din text: {result.get('final_report', '')[:100]}")
+    print("----------------------\n")
+
     # Returnăm doar datele necesare pentru a forma raspunsul HTTP
     return {
         "final_report": result['final_report'],

@@ -129,6 +129,83 @@ Strict Format Required:\n
 [BEAR CASE]: <your argument>\n
 ### OUTPUT""") | llm | StrOutputParser()
 
+risk_prompt = PromptTemplate.from_template(f"""{system_rules}\n
+Role: Risk Manager.
+Evaluate if we should trade {{ticker}} based on the debate AND the user's current portfolio.\n
+
+Portfolio Context:
+{{portfolio_context}}\n
+
+Debate Summary:
+Bull says: {{bull_args}}
+Bear says: {{bear_args}}\n
+
+Task:
+1. Assess the trade risk.
+2. Exposure Check: Check if the user already has too much of {{ticker}}.
+3. Affordability: Check if "Buying Power" is sufficient for a meaningful position.
+4. Formulate a mitigation strategy including specific position sizing (e.g., "Invest only 5% of available buying power").\n
+
+Strict Format Required:
+[PORTFOLIO RISK]: <analyze if this trade fits the current balance/positions>
+[MARKET RISK]: <evaluate the level of risk based on the debate>
+[MITIGATION STRATEGY]: <actionable steps including position sizing>
+### OUTPUT""") | llm | StrOutputParser()
+
+judge_prompt = PromptTemplate.from_template(f"""{system_rules}\n
+Role: Chief Investment Officer (Judge).\n
+Bull's Arguments:\n{{bull_args}}\n
+Bear's Arguments:\n{{bear_args}}\n
+Risk Analysis:\n{{risk_analysis}}\n\n
+
+Task:\nYou are the final judge of this debate.\n
+Evaluate the strength of the Bull and Bear cases based STRICTLY on how well they utilized the provided numbers and data
+in their [DEBUNK] and [ARGUE] sections.\n
+Base your evaluation exclusively on the provided text.\n\n
+
+1. EVALUATE DEBUNK: Identify which agent successfully countered the other's claims using factual data.\n
+Reward agents who cite specific provided data.
+Penalize agents who invent connections or state unverified claims.\n
+
+2. EVALUATE ARGUMENT: Identify which agent built a stronger case using the provided fundamental and technical data.\n
+
+3. DECISION: State your final decision clearly (BUY, SELL, or HOLD) based on the balance of the arguments
+and the Risk Analysis.\n\n
+
+Strict Format Required:\n
+[DEBUNK EVALUATION]: <your evaluation>\n
+[ARGUMENT EVALUATION]: <your evaluation>\n
+[FINAL DECISION]: <BUY/SELL/HOLD> - <brief justification>\n
+### OUTPUT""") | llm | StrOutputParser()
+
+mentor_prompt_text = f"""{system_rules}\n
+Role: Trading Mentor. \n
+CIO Decision: {{judge_decision}}\n
+Fundamental Data: {{fundamental_analysis}}\n\n
+
+Task:\nWrite a comprehensive, engaging, and highly digestible educational report for a beginner trader.\n
+Translate the logical essence of the CIO Decision into simple, everyday language.\n
+DO NOT mention "Bull", "Bear", "debate", "arguments", "agents", or any internal debate processes.
+Present this as a unified, expert market analysis.\n
+Use very few technical terms. If you MUST use a technical term (like volatility, momentum, trend, etc.),
+you must explain it immediately in simple terms using parentheses.\n\n
+
+Format strictly with these sections:\n\n
+
+FINAL VERDICT:\n(Extract the exact decision: BUY, SELL, or HOLD from the CIO Decision)\n\n
+
+MARKET CONTEXT:\n(Explain the current situation simply, using exclusively the provided fundamental and technical text.
+Focus on what the company is actually doing)\n\n
+
+THE REASONING:\n(Explain WHY this verdict was reached based on the CIO Decision.
+Focus on the facts, numbers, and logic, presenting it as a cohesive strategy rather than a debate outcome)\n\n
+
+TRADING LESSON:\n(Provide specific, actionable advice on how to handle this exact scenario as a beginner,
+focusing entirely on risk management, protecting money, and making data-driven decisions)\n\n
+
+### OUTPUT"""
+mentor_prompt = PromptTemplate.from_template(mentor_prompt_text) | llm | StrOutputParser()
+
 # --- NODES ---
 def node_tech(state):
     print("Running Technical Analyst...")

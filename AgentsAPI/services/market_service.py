@@ -23,6 +23,9 @@ company_name: str) -> bool:
 def fetch_and_process_market_data(ticker: str, last_update_date: datetime,
 api_key: str, api_secret: str, vector_db, volatility_threshold=2.0) -> str:
     print(f"\n--- LIVE DATA SYNCHRONIZATION FOR {ticker} ---")
+
+    print(f"[DEBUG] Fetching news starting from: {last_update_date}")
+    
     company_name = get_company_keyword(ticker)
     end_date = datetime.now()
 
@@ -37,7 +40,7 @@ api_key: str, api_secret: str, vector_db, volatility_threshold=2.0) -> str:
 
     stock = yf.Ticker(ticker)
     prices = stock.history(
-        start=last_update_date.strftime("%y-%m-%d"),
+        start=last_update_date.strftime("%Y-%m-%d"),
         end=(end_date + timedelta(days=5)).strftime("%Y-%m-%d")
     )
 

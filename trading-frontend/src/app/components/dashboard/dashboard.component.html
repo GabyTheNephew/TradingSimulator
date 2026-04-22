@@ -406,14 +406,14 @@
                 <h3>AI Market Intelligence for {{ analysisResult.ticker }}</h3>
 
                 <div class="report-content">
-                    {{ analysisResult.finalReport }}
+                    {{ analysisResult.final_report }}
                 </div>
 
-                @if(analysisResult.sourcesUsed && analysisResult.sourcesUsed.length > 0) {
+                @if(analysisResult.sources_used && analysisResult.sources_used.length > 0) {
                 <div class="sources">
                     <strong>Surse procesate din Memorie (RAG):</strong>
                     <ul>
-                        @for(source of analysisResult.sourcesUsed; track source) {
+                        @for(source of analysisResult.sources_used; track source) {
                         <li>
                             <a [href]="source" target="_blank">{{ source }}</a>
                         </li>

@@ -1,5 +1,5 @@
 export interface AnalysisResponse {
     ticker: string;
-    finalReport: string;
-    sourcesUsed: string[];
+    final_report: string;
+    sources_used: string[];
 }
