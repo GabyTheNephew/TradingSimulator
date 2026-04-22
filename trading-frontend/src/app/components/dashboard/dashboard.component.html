@@ -386,6 +386,44 @@
                 </div>
             </div>
         </div>
+        <div class="ai-section">
+            <button class="btn-ai" (click)="generateAIAnalysis()" [disabled]="isAnalyzing || !searchedSymbol"
+                data-tooltip="Generates an AI-powered market and portfolio risk analysis.">
+
+                @if(!isAnalyzing) {
+                <span>✨ Generate AI Analysis</span>
+                } @else {
+                <span>⏳ Analyzing market & portfolio...</span>
+                }
+            </button>
+
+            @if(analysisError) {
+            <p class="error-msg" style="margin-top: 1rem;">{{ analysisError }}</p>
+            }
+
+            @if(analysisResult) {
+            <div class="ai-report">
+                <h3>AI Market Intelligence for {{ analysisResult.ticker }}</h3>
+
+                <div class="report-content">
+                    {{ analysisResult.finalReport }}
+                </div>
+
+                @if(analysisResult.sourcesUsed && analysisResult.sourcesUsed.length > 0) {
+                <div class="sources">
+                    <strong>Surse procesate din Memorie (RAG):</strong>
+                    <ul>
+                        @for(source of analysisResult.sourcesUsed; track source) {
+                        <li>
+                            <a [href]="source" target="_blank">{{ source }}</a>
+                        </li>
+                        }
+                    </ul>
+                </div>
+                }
+            </div>
+            }
+        </div>
     </div>
     }
 </div>

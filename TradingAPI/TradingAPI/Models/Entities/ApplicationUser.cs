@@ -7,5 +7,7 @@ namespace TradingAPI.Models.Entities
     {
         [Precision(18, 4)]
         public decimal Balance {  get; set; }
+
+        public DateTime? LastAnalysisDate {  get; set; }
     }
 }

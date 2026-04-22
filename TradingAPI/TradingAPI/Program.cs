@@ -26,6 +26,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<AlpacaService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TradingService>();
+builder.Services.AddHttpClient<AnalysisService>();
+builder.Services.AddScoped<AnalysisService>();
 
 builder.Services.AddDbContext<TradingAPI.Data.ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

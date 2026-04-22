@@ -834,6 +834,124 @@
         }
       }
     }
+
+    .ai-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .btn-ai {
+        background: linear-gradient(135deg, #6a1b9a 0%, #8e24aa 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 4px 6px rgba(106, 27, 154, 0.2);
+        position: relative; // Necesar pentru ca tooltip-ul să se poziționeze corect
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(106, 27, 154, 0.3);
+        }
+
+        &:disabled {
+          background: #94a3b8;
+          box-shadow: none;
+          cursor: not-allowed;
+          opacity: 0.8;
+          transform: none;
+        }
+
+        // TOOLTIP LOGIC (consistență cu restul aplicației tale)
+        &::after {
+          content: attr(data-tooltip);
+          position: absolute;
+          bottom: 120%; // Poziționat deasupra butonului
+          left: 50%;
+          transform: translateX(-50%) translateY(5px);
+          background-color: #1e293b;
+          color: white;
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.25rem;
+          font-size: 0.85rem;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: all 0.2s ease-in-out;
+          z-index: 100;
+          font-weight: normal;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        &:hover::after {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+
+      .ai-report {
+        margin-top: 1.5rem;
+        width: 100%;
+        background-color: #f8fafc;
+        border-left: 4px solid #6a1b9a;
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+        h3 {
+          margin-top: 0;
+          margin-bottom: 1rem;
+          color: #1e293b;
+          font-size: 1.25rem;
+          font-weight: 700;
+        }
+
+        .report-content {
+          white-space: pre-wrap; // Respectă paragrafele (\n) venite din Python
+          font-size: 1rem;
+          line-height: 1.7;
+          color: #334155;
+        }
+
+        .sources {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 1px dashed #cbd5e1;
+          font-size: 0.85rem;
+          color: #64748b;
+
+          ul {
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+
+            li {
+              margin-bottom: 0.4rem;
+
+              a {
+                color: #3b82f6;
+                text-decoration: none;
+                transition: color 0.2s;
+                word-break: break-all;
+
+                &:hover {
+                  color: #2563eb;
+                  text-decoration: underline;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   [data-tooltip] {
@@ -913,6 +1031,7 @@
       transform: translateX(0) translateY(0);
     }
   }
+
   .stat-item:first-child[data-tooltip] {
     &::after {
       left: 0;

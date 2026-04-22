@@ -13,6 +13,8 @@ import { OrderResponse, StockQuote, TradeRequest } from '../../models/trade.mode
 import { PortfolioItem, PortfolioResponse } from '../../models/portfolio.model';
 import { Subscription, interval } from 'rxjs';
 import { OnDestroy } from '@angular/core';
+import { AnalysisResponse } from '../../models/analysis.model';
+import { AnalysisService } from '../../services/analysis.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -72,7 +74,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private pollingSubscription?: Subscription;
 
-  constructor(private stockService: StockService,
+  isAnalyzing: boolean = false;
+  analysisResult: AnalysisResponse | null = null;
+  analysisError: string = '';
+
+  constructor(
+    private analysisService: AnalysisService,
+    private stockService: StockService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private tradingService: TradingService) { }
@@ -82,6 +90,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadUserProfile();
+  }
+
+  generateAIAnalysis() {
+    if (!this.searchedSymbol) return; // Folosim searchedSymbol!
+    
+    this.isAnalyzing = true;
+    this.analysisResult = null;
+    this.analysisError = '';
+
+    // Asigură-te că serviciul tău are metoda getAIAnalysis(ticker)
+    this.analysisService.getAIAnalysis(this.searchedSymbol).subscribe({
+      next: (response: AnalysisResponse) => {
+        this.analysisResult = response;
+        this.isAnalyzing = false;
+        this.cdr.detectChanges(); // Ne asigurăm că Angular actualizează interfața
+      },
+      error: (err) => {
+        console.error("Eroare la AI:", err);
+        this.analysisError = "A apărut o eroare la generarea analizei AI. Încearcă din nou.";
+        this.isAnalyzing = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   public goToTutorial(fragmentId?: string): void {
@@ -185,6 +216,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log("StockData: ", this.stockData);
         console.log(data);
         this.searchedSymbol = this.searchQuery;
+        this.analysisResult = null;
         this.loadSymbolOrders(this.searchedSymbol);
         this.loadChartHistory(this.searchedSymbol, this.selectedCandle);
         this.startPolling(this.searchedSymbol);

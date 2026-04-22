@@ -69,3 +69,11 @@ TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
 TradingAPI/TradingAPI/Migrations/20260320092539_AddOrdersTable.cs
 TradingAPI/TradingAPI/Migrations/20260320092539_AddOrdersTable.Designer.cs
 TradingAPI/TradingAPI/Migrations/ApplicationDbContextModelSnapshot.cs
+AgentsAPI/.env
+AgentsAPI/controllers/__init__.py
+AgentsAPI/models/__init__.py
+AgentsAPI/services/__init__.py
+AgentsAPI/services/__pycache__/__init__.cpython-314.pyc
+AgentsAPI/controllers/__pycache__/__init__.cpython-314.pyc
+*.pyc
+*.bin

@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-groq
+langchain-community
+langchain-huggingface
+langgraph
+chromadb
+yfinance
+alpaca-py
+pandas
+python-dotenv
+sentence-transformers
